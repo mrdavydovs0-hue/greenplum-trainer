@@ -72,3 +72,4 @@
   - St_03/02_материалы — источники теории (бывшая GP_гайд/источники без дубликатов);
   - St_03/greenplum-trainer — репозиторий: README, PLAN, .gitignore, docs/ (index.html + assets/style.css, app.js, favicon.svg, .nojekyll). Публикация: Settings → Pages → main /docs.
   - Удалены точные копии (00_* в источниках, St3 md), устаревший одиночный gp-trenazher.html и пустая папка GP_гайд.
+- 2026-10-14: добавлен CHANGELOG.md (версии 0.1.0–1.0.0), номер версии на стартовой странице; дальше каждое изменение сайта записывается туда.

@@ -11,7 +11,8 @@
 ```
 greenplum-trainer/
 ├── README.md            — этот файл
-├── PLAN.md              — план и журнал изменений
+├── CHANGELOG.md         — история версий сайта
+├── PLAN.md              — рабочий план и журнал задач
 ├── .gitignore
 └── docs/                — исходники сайта, папка для GitHub Pages
     ├── index.html       — разметка: 10 уровней (старт + 9 тем)
@@ -45,7 +46,7 @@ python -m http.server 8000
 3. На GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a branch**, ветка `main`, папка `/docs`, **Save**.
 4. Через 1–2 минуты сайт откроется по адресу `https://<твой-логин>.github.io/greenplum-trainer/`.
 
-Обновление сайта — обычный `git commit` и `git push` изменённых файлов в `docs/`.
+Обновление сайта — обычный `git commit` и `git push` изменённых файлов в `docs/`. Каждое изменение записывается в `CHANGELOG.md` с номером версии.
 
 ## Источники
 
