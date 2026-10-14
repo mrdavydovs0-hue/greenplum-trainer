@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Тренажёр Greenplum</title>
+<meta name="description" content="Интерактивный тренажёр по Greenplum: MPP, распределение и перекос, хранение, EXPLAIN, партиции, EXCHANGE PARTITION, PXF и способы загрузки.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand">Тренажёр <span>Greenplum</span></div>
+  <div class="meter" aria-label="Прогресс прохождения"><div class="meter-bar"><i id="meterFill"></i></div><span class="mono" id="meterTxt" style="font-size:.8rem;color:var(--muted)">0/9</span></div>
+  <div class="tb">
+    <button class="tb-icon" id="thBtn" type="button" aria-label="Тема" data-tip="Тема"></button>
+    <button class="tb-icon" id="rsBtn" type="button" aria-label="Начать заново: сбросить прогресс" data-tip="Начать заново: сбросить прогресс" aria-expanded="false" aria-controls="rsPop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v3.9h3.9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="tb-icon" id="gearBtn" type="button" aria-label="Настройки" data-tip="Настройки" aria-expanded="false" aria-controls="setPop"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="pop" id="setPop" hidden role="dialog" aria-label="Настройки">
+      <div class="prow"><span class="plab">Тема</span><div class="segc" id="modeSeg"><button type="button" data-mode="system">Системная</button><button type="button" data-mode="light">Светлая</button><button type="button" data-mode="dark">Тёмная</button></div></div>
+      <div class="prow col"><span class="plab">Палитра</span><div class="swatches" id="palSw"></div></div>
+    </div>
+    <div class="pop" id="rsPop" hidden role="dialog" aria-label="Сброс прогресса">
+      <p>Сбросить ответы на чекпоинты, решённые задачи и пройденные уровни? Тема и палитра останутся.</p>
+      <div class="row"><button class="btn" id="rsYes" type="button">Сбросить</button><button class="ghost" id="rsNo" type="button">Отмена</button></div>
+    </div>
+  </div>
+</div></header>
+
+<div class="wrap"><div class="grid">
+<nav class="map" id="map" aria-label="Уровни"><h4>Маршрут · 9 уровней</h4></nav>
+<main id="levels">
+
+<!-- ============ 0 START ============ -->
+<section class="level" data-lv="0" data-title="Старт" data-short="Старт">
+  <div class="hero">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="eyebrow">Stage 3 · материалы по Greenplum</div>
+      <h1>Видео, статьи и карточки по Greenplum в одном <em>тренажёре</em></h1>
+      <p class="lead">Каждый уровень устроен одинаково: теория с переходами от простого к сложному, интерактивные схемы, задачи на SQL с автопроверкой и чекпоинт, где можно разобрать каждый вариант ответа. Проходи подряд, не отвлекаясь. Прогресс сохраняется в этом браузере.</p>
+      <div class="row"><button class="btn" data-go="1">Начать с уровня 1 →</button><span class="src">≈ 2–2,5 часа · клавиши: <code>1–4</code> ответ, <code>Enter</code> дальше, <code>←</code> <code>→</code> уровни</span></div>
+    </div>
+    <div class="card">
+      <div class="tag">Где ты в пайплайне Citibike</div>
+      <div class="pipe">
+        <div>S3 · raw_valid / raw_valid_late (Parquet, Stage 2)</div><span>↓ PXF external table</span>
+        <div class="me">Greenplum · stg.citibike_trips (distributed, partitioned)</div><span>↓ Stage 4+</span>
+        <div>витрины</div>
+      </div>
+    </div>
+  </div>
+  <div class="rules">
+    <div><b>Цель уровня</b>Одна тема, которую нужно понять до практики 03.1–03.3.</div>
+    <div><b>Обратная связь</b>Ответ сразу подсвечивается и объясняется. Ошибки не штрафуются, только сбивают серию.</div>
+    <div><b>Практика</b>Задачи на SQL проверяются сразу: видно, какие пункты выполнены, а какие нет. Тему и палитру редактора можно выбрать вверху.</div>
+  </div>
+  <div class="card">
+    <div class="tag">Что покрывает тренажёр</div>
+    <div class="tablewrap"><table>
+      <tr><th>Источник из Confluence</th><th>Уровни</th></tr>
+      <tr><td><a href="https://www.youtube.com/live/TupXHhdSrhg" target="_blank" rel="noopener">Обзорное видео про GP</a> (Д. Павлов, DataLearn)</td><td>1–4</td></tr>
+      <tr><td><a href="https://youtu.be/m0EkeQjjxVM" target="_blank" rel="noopener">Детальное видео про GP с практикой</a></td><td>1–5</td></tr>
+      <tr><td><a href="https://docs.arenadata.io/ru/ADB/current/concept/data-model/tables/partitioning.html" target="_blank" rel="noopener">Партиции + обмен партициями</a> (Arenadata)</td><td>5–6</td></tr>
+      <tr><td><a href="https://habr.com/ru/companies/otus/articles/682990/" target="_blank" rel="noopener">Обзор PXF + External table</a> (Habr / OTUS)</td><td>7</td></tr>
+      <tr><td><a href="https://squidex.jugru.team/api/assets/srm/5061589c-532b-4a85-a80c-d8f73c8cc0fa/konferenciya-smart-data-tanya-didova-greenplum.pdf" target="_blank" rel="noopener">5 способов загрузки в Greenplum</a> (Т. Дидова)</td><td>8</td></tr>
+      <tr><td>Блок «архитектура» из списка теории: распределение, skew, хранение, EXPLAIN</td><td>2–4</td></tr>
+      <tr><td>Карточки Anki по Greenplum (21 карточка)</td><td>1–9</td></tr>
+      <tr><td><a href="https://gpskew.rzvde.pro/" target="_blank" rel="noopener">gpskew.rzvde.pro</a>: распределение, перекос, JOIN, партиции</td><td>2, 4, 5</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- ============ 1 MPP ============ -->
+<section class="level" data-lv="1" data-title="Greenplum и MPP" data-short="MPP" hidden>
+  <div class="eyebrow">Уровень 1</div>
+  <h2>Что такое Greenplum и зачем он появился</h2>
+  <p class="lead">Прежде чем разбираться с сегментами и партициями, нужно понять, какую задачу решает Greenplum и чем он отличается от обычного PostgreSQL.</p>
+
+  <h3 class="sec">Простыми словами</h3>
+  <div class="concept" id="th-what">
+    <p><b>PostgreSQL</b> — обычная база данных на одном сервере. Она отлично справляется с <b>OLTP</b> (online transaction processing, обработка транзакций в реальном времени): тысячи коротких операций вроде «создать заказ», «изменить статус». Когда данных становится несколько терабайт и нужно посчитать, например, все поездки за год по станциям, один сервер упирается в свой диск и процессор.</p>
+    <p><b>Greenplum</b> решает это так: берёт много PostgreSQL, раскладывает по ним данные и заставляет их считать один запрос <b>одновременно</b>. Для пользователя это выглядит как одна большая база. Подход называется <b>MPP</b> (massively parallel processing, массово-параллельная обработка), а задачи «прочитать много и посчитать» — <b>OLAP</b> (online analytical processing, аналитическая обработка).</p>
+  </div>
+  <div class="note">Определение для собеседования: <b>Greenplum — распределённая аналитическая СУБД на основе PostgreSQL с MPP-архитектурой.</b> Данные и вычисления разнесены по сегментам, которые работают параллельно. Управляет кластером мастер. Оптимизирована под аналитику больших объёмов, а не под быстрые транзакции.</div>
+
+  <h3 class="sec">Слова, которые будут дальше</h3>
+  <p>В тексте постоянно встречаются несколько терминов и сокращений. Если забудешь значение, наведи курсор на подчёркнутое слово: появится подсказка.</p>
+  <div class="concept" id="th-gloss">
+    <div class="gloss">
+      <div><b>Сервер, хост</b><span>Физическая или виртуальная машина: свои процессор, память, диски.</span></div>
+      <div><b>Инстанс (экземпляр)</b><span>Запущенная программа сервера PostgreSQL со своей папкой данных и своим портом. На одном хосте можно запустить несколько инстансов, как несколько окон одной программы. Инстанс — это не компьютер, а программа на компьютере.</span></div>
+      <div><b>Сегмент</b><span>Инстанс PostgreSQL внутри Greenplum, который хранит часть данных и считает свою часть запроса.</span></div>
+      <div><b>Нода, узел</b><span>Участник кластера. Так называют и хост, и сегмент, смотри по контексту.</span></div>
+      <div><b>Кластер</b><span>Все хосты Greenplum вместе, которые работают как одна база.</span></div>
+      <div><b>Таблица фактов</b><span>Большая таблица событий: поездки, заказы, платежи. Миллионы строк, постоянно растёт.</span></div>
+      <div><b>Справочник</b><span>Маленькая таблица с описанием сущностей: станция → название и координаты. Мало строк, меняется редко. К ней «приклеивают» описания в JOIN.</span></div>
+      <div><b>Системное представление</b><span>Встроенное в базу «окно» в служебную информацию: выглядит как таблица, но данные собираются на лету из системного каталога. Пример — <code>pg_partitions</code>.</span></div>
+    </div>
+  </div>
+  <p>Сокращения, которые встретятся:</p>
+  <div class="concept" id="th-abbr"><div class="abbrs" id="abbrList"></div></div>
+
+  <h3 class="sec">Историческая справка</h3>
+  <p>Greenplum прошёл путь от стартапа до продукта Broadcom с закрытым кодом. Это объясняет, почему на проектах встречаются разные названия: Pivotal Greenplum, VMware Tanzu Greenplum, Arenadata DB, Cloudberry.</p>
+  <div class="concept" id="th-history">
+    <ol class="timeline">
+      <li><b>2003</b><span>Основана компания Greenplum: слияние стартапов Metapa и Didera.</span></li>
+      <li><b>2005</b><span>Первый продукт на основе PostgreSQL — Bizgres.</span></li>
+      <li><b>2010</b><span>Greenplum покупает EMC.</span></li>
+      <li><b>2012</b><span>Продукт уходит в Pivotal: Pivotal Greenplum Database.</span></li>
+      <li><b>2015</b><span>Код Greenplum открывают (open source). На открытом коде позже появятся Arenadata DB и Yandex Managed Service for Greenplum.</span></li>
+      <li><b>2019</b><span>Greenplum 6 на основе PostgreSQL 9.4. Эта версия до сих пор стоит на большинстве проектов.</span></li>
+      <li><b>2019–2020</b><span>VMware покупает Pivotal, продукт становится VMware Tanzu Greenplum.</span></li>
+      <li><b>2023</b><span>Greenplum 7 на основе PostgreSQL 12. VMware покупает Broadcom.</span></li>
+      <li><b>май 2024</b><span>Исходный код закрывают, репозитории на GitHub архивируют. Новые версии только коммерческие.</span></li>
+      <li><b>2024–2025</b><span>Появляются открытые форки: Apache Cloudberry (в инкубаторе Apache с ноября 2024), Greengage (на нём теперь собирается Arenadata DB), WarehousePG.</span></li>
+    </ol>
+  </div>
+
+  <h3 class="sec">PostgreSQL и Greenplum: сравнение</h3>
+  <p>Greenplum вырос из PostgreSQL, поэтому SQL у них общий. Различается всё, что связано с тем, где лежат данные и кто их считает.</p>
+  <div class="concept" id="th-pgvsgp">
+    <div class="tablewrap"><table>
+      <tr><th></th><th>PostgreSQL</th><th>Greenplum</th></tr>
+      <tr><td><b>Общее</b></td><td colspan="2">Тот же SQL, те же типы данных, JSON, транзакции ACID, тот же драйвер и порт 5432. DBeaver подключается к Greenplum как к обычному PostgreSQL.</td></tr>
+      <tr><td><b>Архитектура</b></td><td>Один сервер</td><td>MPP-кластер: мастер + много сегментов на разных хостах</td></tr>
+      <tr><td><b>Выполнение запроса</b></td><td>На одном сервере</td><td>Параллельно на всех сегментах, строки пересылаются по сети (Motion)</td></tr>
+      <tr><td><b>Масштабирование</b></td><td>Вертикальное: мощнее сервер</td><td>Горизонтальное: больше хостов и сегментов (и вертикальное тоже)</td></tr>
+      <tr><td><b>Хранение</b></td><td>Только построчно (heap)</td><td>Heap, append-optimized, колоночное хранение, сжатие</td></tr>
+      <tr><td><b>Нагрузка</b></td><td>OLTP: много мелких транзакций</td><td>OLAP: тяжёлые запросы по большим объёмам</td></tr>
+      <tr><td><b>Новое при создании таблицы</b></td><td>—</td><td><code>DISTRIBUTED BY</code>: как разложить строки по сегментам</td></tr>
+      <tr><td><b>Внешние данные</b></td><td>Foreign Data Wrappers</td><td>External tables: PXF, gpfdist</td></tr>
+      <tr><td><b>Индексы</b></td><td>Основной способ ускорения</td><td>Нужны редко: хватает распределения, партиций и колоночного хранения</td></tr>
+      <tr><td><b>Версия ядра</b></td><td>Актуальная</td><td>GP6 — PostgreSQL 9.4, GP7 — PostgreSQL 12</td></tr>
+      <tr><td><b>Лицензия</b></td><td>Open source</td><td>С мая 2024 закрытый код, развитие продолжают форки</td></tr>
+    </table></div>
+  </div>
+
+  <h3 class="sec">Плюсы и минусы Greenplum</h3>
+  <p>Параллельность даёт скорость на больших объёмах, но за неё платят железом, сетью и неудобством мелких операций.</p>
+  <div class="cols2" id="th-proscons">
+    <div class="concept pros"><div class="tag">Плюсы</div><ul class="steps">
+      <li>Быстро обрабатывает сложные запросы по большим объёмам за счёт параллельности.</li>
+      <li><b>Shared nothing:</b> у каждого сегмента свои процессор, память и диск, он работает со своими данными и не ждёт других.</li>
+      <li>Горизонтальное масштабирование до сотен узлов, вертикальное тоже возможно.</li>
+      <li>Отказоустойчивость: зеркала сегментов и резервный мастер.</li>
+      <li>Знакомый SQL PostgreSQL.</li>
+    </ul></div>
+    <div class="concept cons"><div class="tag">Минусы</div><ul class="steps">
+      <li>Высокие требования к процессорам, памяти, дискам и особенно к сети между сегментами.</li>
+      <li>Не для OLTP: частые INSERT, UPDATE, DELETE медленные, каждая транзакция на мастере порождает транзакции на сегментах.</li>
+      <li>Мастер один и может стать узким местом.</li>
+      <li>GP6 основан на старом PostgreSQL 9.4, многих современных возможностей нет.</li>
+      <li>Код закрыт с 2024 года.</li>
+    </ul></div>
+  </div>
+
+  <h3 class="sec">Альтернативы Greenplum сейчас</h3>
+  <p>После закрытия кода компании выбирают между открытыми форками и другими аналитическими системами. Знать их полезно для собеседований и для понимания рынка.</p>
+  <div class="concept" id="th-alt">
+    <div class="tablewrap"><table>
+      <tr><th>Группа</th><th>Примеры</th><th>Чем отличаются</th></tr>
+      <tr><td>Открытые форки Greenplum</td><td>Apache Cloudberry, Greengage / Arenadata DB, WarehousePG</td><td>Та же архитектура и SQL, переход почти без переписывания</td></tr>
+      <tr><td>Колоночные MPP-СУБД</td><td>ClickHouse, Vertica, Teradata</td><td>ClickHouse очень быстр на агрегатах, но слабее в сложных JOIN и транзакциях</td></tr>
+      <tr><td>Облачные хранилища</td><td>Snowflake, Amazon Redshift, Google BigQuery</td><td>Кластером управляет провайдер, оплата за ресурсы</td></tr>
+      <tr><td>Движки над озером данных</td><td>Trino, Spark SQL поверх S3</td><td>Данные лежат в файлах (Parquet), отдельного хранилища нет</td></tr>
+    </table></div>
+  </div>
+
+  <h2 style="margin-top:12px">Мастер думает, сегменты работают</h2>
+  <div class="prose" id="th-mpp">
+    <p>Теперь посмотрим, из чего состоит кластер. Greenplum — это много <span class="term" tabindex="0" data-g="inst">инстансов</span> PostgreSQL (запущенных программ-серверов), которые работают как одна база. Архитектура <b>shared-nothing</b>: у каждого сегмента свой процессор, своя память и свой диск, общего хранилища нет.</p>
+  </div>
+<figure class="dgfig">
+  <div class="dgwrap"><svg class="dg" viewBox="0 0 720 420" role="img" aria-label="Схема кластера Greenplum: клиент подключается к мастеру, мастер через interconnect раздаёт план четырём хостам, на каждом хосте два primary-сегмента с данными и два mirror-сегмента соседнего хоста">
+    <defs><marker id="dgA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+    <rect class="bx" x="290" y="10" width="140" height="40" rx="8"/><text x="360" y="27" class="mono b" text-anchor="middle">client</text><text x="360" y="42" class="sm" text-anchor="middle">DBeaver / Airflow</text>
+    <line class="ln" x1="360" y1="50" x2="360" y2="84" marker-end="url(#dgA)"/><text x="368" y="72" class="sm">SQL</text>
+    <rect class="ms" x="250" y="86" width="220" height="62" rx="8"/><text x="360" y="106" class="mono b" text-anchor="middle">master</text><text x="360" y="122" class="sm" text-anchor="middle">каталог · строит план</text><text x="360" y="138" class="sm" text-anchor="middle">строк таблиц нет</text>
+    <circle class="cn" cx="250" cy="86" r="10"/><text class="cnt" x="250" y="90" text-anchor="middle">1</text>
+    <rect class="bx dash" x="540" y="94" width="150" height="46" rx="8"/><text x="615" y="114" class="mono" text-anchor="middle">standby master</text><text x="615" y="130" class="sm" text-anchor="middle">горячая копия</text>
+    <circle class="cn" cx="540" cy="94" r="10"/><text class="cnt" x="540" y="98" text-anchor="middle">2</text>
+    <line class="ln dash" x1="470" y1="117" x2="537" y2="117" marker-end="url(#dgA)"/><text x="504" y="110" class="sm" text-anchor="middle">реплика</text>
+    <line class="ln" x1="340" y1="148" x2="340" y2="186" marker-end="url(#dgA)"/><text x="332" y="172" class="sm" text-anchor="end">план</text>
+    <line class="ln" x1="380" y1="186" x2="380" y2="150" marker-end="url(#dgA)"/><text x="388" y="172" class="sm">результат</text>
+    <rect class="icb" x="20" y="188" width="680" height="32" rx="16"/><text x="360" y="209" class="mono b" text-anchor="middle">INTERCONNECT · строки между сегментами и мастером</text>
+    <circle class="cn" cx="20" cy="204" r="10"/><text class="cnt" x="20" y="208" text-anchor="middle">4</text>
+    <rect class="host" x="20" y="242" width="160" height="150" rx="8"/><text x="32" y="262" class="mono b">host 1</text><rect class="mr" x="30" y="274" width="66" height="46" rx="6"/><text x="63" y="294" class="mono" text-anchor="middle">m6</text><text x="63" y="310" class="sm" text-anchor="middle">mirror</text><rect class="pr" x="104" y="274" width="66" height="46" rx="6"/><text x="137" y="294" class="mono b" text-anchor="middle">seg0</text><text x="137" y="310" class="sm" text-anchor="middle">primary</text><rect class="mr" x="30" y="332" width="66" height="46" rx="6"/><text x="63" y="352" class="mono" text-anchor="middle">m7</text><text x="63" y="368" class="sm" text-anchor="middle">mirror</text><rect class="pr" x="104" y="332" width="66" height="46" rx="6"/><text x="137" y="352" class="mono b" text-anchor="middle">seg1</text><text x="137" y="368" class="sm" text-anchor="middle">primary</text><line class="ln" x1="100" y1="220" x2="100" y2="240" marker-start="url(#dgA)" marker-end="url(#dgA)"/><rect class="host" x="193" y="242" width="160" height="150" rx="8"/><text x="205" y="262" class="mono b">host 2</text><rect class="mr" x="203" y="274" width="66" height="46" rx="6"/><text x="236" y="294" class="mono" text-anchor="middle">m0</text><text x="236" y="310" class="sm" text-anchor="middle">mirror</text><rect class="pr" x="277" y="274" width="66" height="46" rx="6"/><text x="310" y="294" class="mono b" text-anchor="middle">seg2</text><text x="310" y="310" class="sm" text-anchor="middle">primary</text><rect class="mr" x="203" y="332" width="66" height="46" rx="6"/><text x="236" y="352" class="mono" text-anchor="middle">m1</text><text x="236" y="368" class="sm" text-anchor="middle">mirror</text><rect class="pr" x="277" y="332" width="66" height="46" rx="6"/><text x="310" y="352" class="mono b" text-anchor="middle">seg3</text><text x="310" y="368" class="sm" text-anchor="middle">primary</text><line class="ln" x1="273" y1="220" x2="273" y2="240" marker-start="url(#dgA)" marker-end="url(#dgA)"/><rect class="host" x="367" y="242" width="160" height="150" rx="8"/><text x="379" y="262" class="mono b">host 3</text><rect class="mr" x="377" y="274" width="66" height="46" rx="6"/><text x="410" y="294" class="mono" text-anchor="middle">m2</text><text x="410" y="310" class="sm" text-anchor="middle">mirror</text><rect class="pr" x="451" y="274" width="66" height="46" rx="6"/><text x="484" y="294" class="mono b" text-anchor="middle">seg4</text><text x="484" y="310" class="sm" text-anchor="middle">primary</text><rect class="mr" x="377" y="332" width="66" height="46" rx="6"/><text x="410" y="352" class="mono" text-anchor="middle">m3</text><text x="410" y="368" class="sm" text-anchor="middle">mirror</text><rect class="pr" x="451" y="332" width="66" height="46" rx="6"/><text x="484" y="352" class="mono b" text-anchor="middle">seg5</text><text x="484" y="368" class="sm" text-anchor="middle">primary</text><line class="ln" x1="447" y1="220" x2="447" y2="240" marker-start="url(#dgA)" marker-end="url(#dgA)"/><rect class="host" x="540" y="242" width="160" height="150" rx="8"/><text x="552" y="262" class="mono b">host 4</text><rect class="mr" x="550" y="274" width="66" height="46" rx="6"/><text x="583" y="294" class="mono" text-anchor="middle">m4</text><text x="583" y="310" class="sm" text-anchor="middle">mirror</text><rect class="pr" x="624" y="274" width="66" height="46" rx="6"/><text x="657" y="294" class="mono b" text-anchor="middle">seg6</text><text x="657" y="310" class="sm" text-anchor="middle">primary</text><rect class="mr" x="550" y="332" width="66" height="46" rx="6"/><text x="583" y="352" class="mono" text-anchor="middle">m5</text><text x="583" y="368" class="sm" text-anchor="middle">mirror</text><rect class="pr" x="624" y="332" width="66" height="46" rx="6"/><text x="657" y="352" class="mono b" text-anchor="middle">seg7</text><text x="657" y="368" class="sm" text-anchor="middle">primary</text><line class="ln" x1="620" y1="220" x2="620" y2="240" marker-start="url(#dgA)" marker-end="url(#dgA)"/>
+    <circle class="cn" cx="20" cy="242" r="10"/><text class="cnt" x="20" y="246" text-anchor="middle">3</text>
+    <line class="ln dash" x1="170" y1="297" x2="200" y2="297" marker-end="url(#dgA)"/>
+    <line class="ln dash" x1="170" y1="355" x2="200" y2="355" marker-end="url(#dgA)"/>
+    <text x="186" y="410" class="sm" text-anchor="middle">seg0, seg1 → копии m0, m1 на host 2</text><text x="700" y="410" class="sm" text-anchor="end">у каждого хоста свои CPU, RAM и диск</text>
+  </svg></div>
+  <figcaption class="src">Кластер из 4 хостов и 8 сегментов. Клиент общается только с мастером, данные лежат только в primary-сегментах, у каждого primary есть mirror на соседнем хосте.</figcaption>
+</figure>
+  <p>Цифры на схеме соответствуют пояснениям:</p>
+<ol class="dglegend">
+  <li><span><b>Мастер.</b> Принимает подключение (DBeaver ходит к нему, порт 5432), хранит системный каталог, строит план, раздаёт его сегментам и отдаёт результат клиенту. Пользовательских строк на мастере нет. Пользователь видит только мастер, весь кластер выглядит как одна база.</span></li>
+  <li><span><b>Standby master.</b> Резервный мастер, получает его журнал. Включается, если мастер упал.</span></li>
+  <li><span><b>Сегменты.</b> Инстансы PostgreSQL на хостах. Только primary хранят данные и выполняют запросы. Mirror (зеркало) хранит <b>копию того же куска данных</b>, что и его primary, но лежит на другом хосте. Пока primary жив, зеркало только принимает изменения и запросы не обрабатывает. У каждого primary ровно одно зеркало.</span></li>
+  <li><span><b>Interconnect.</b> Сеть внутри кластера. По ней мастер отправляет план, сегменты пересылают строки друг другу и возвращают результат. От её скорости зависит весь кластер.</span></li>
+</ol>
+
+  <h3 class="sec">Сколько сегментов в кластере</h3>
+  <p>В примерах тренажёра 8 сегментов — это просто удобное число для картинок. В реальном кластере их число задаёт администратор при установке: <b>хостов × primary-сегментов на хост</b>. Обычно на хост ставят от 2 до 8 primary: столько, сколько выдержат его процессорные ядра, память и диски. Маленькие кластеры — 8–16 сегментов, большие — сотни. Разработчик это число не выбирает, но знать его полезно: от него зависит, насколько ровно лягут данные.</p>
+  <div class="console" id="th-segcount"><pre class="sql">SELECT content, role, hostname, port
+FROM gp_segment_configuration
+WHERE role = 'p'           -- p = primary, m = mirror
+ORDER BY content;          -- content = -1 это мастер</pre><pre class="out"> content | role | hostname | port
+---------+------+----------+------
+      -1 | p    | mdw      | 5432
+       0 | p    | sdw1     | 6000
+       1 | p    | sdw1     | 6001
+       2 | p    | sdw2     | 6000
+       3 | p    | sdw2     | 6001
+(5 rows)</pre></div>
+  <p class="src">Пример вывода условный: кластер из двух хостов по 2 primary-сегмента. Посчитай строки с <code>content &gt;= 0</code> — это и есть число сегментов.</p>
+  <p>Имена хостов — соглашение из документации Greenplum, их задают при установке: <code>mdw</code> — хост мастера, <code>smdw</code> — хост резервного мастера, <code>sdw1</code>, <code>sdw2</code>… — хосты сегментов. Буквы <code>dw</code> означают data warehouse (хранилище данных): <b>m</b>aster <b>d</b>ata <b>w</b>arehouse и <b>s</b>egment <b>d</b>ata <b>w</b>arehouse. На твоём кластере имена могут быть любыми.</p>
+
+  <h3 class="sec">Модель: кто работает при разных запросах</h3>
+  <p>Скорость запроса определяет самый медленный сегмент: мастер ждёт, пока ответят все. Нажми на запрос и посмотри, какие узлы заняты.</p>
+  <div class="card">
+    <div class="row">
+      <button class="ghost" id="simSelect">SELECT count(*)</button>
+      <button class="ghost" id="simInsert">INSERT … VALUES ×8</button>
+      <button class="ghost" id="simPxf">INSERT … SELECT FROM ext</button></div>
+    <div class="cluster">
+      <div class="lvl"><div class="node" id="nClient"><b>client</b>DBeaver / Airflow</div></div>
+      <div class="lvl"><div class="node master" id="nMaster"><b>master</b>каталог · планировщик</div><div class="node" style="opacity:.7"><b>standby</b>копия мастера</div></div>
+      <div class="ic" id="nIc">INTERCONNECT</div>
+      <div class="segs" id="simSegs"></div>
+      <div class="lvl"><div class="node" id="nS3" style="opacity:.55"><b>S3</b>Parquet</div></div>
+    </div>
+    <div class="log" id="simLog">Нажми на один из запросов и посмотри, кто работает.</div>
+    <pre class="sql" id="simSql" hidden></pre>
+  </div>
+
+  <h3 class="sec">Чекпоинт</h3>
+  <div class="quiz" data-quiz="mpp"></div>
+  <p class="src">Источники: <a href="https://www.youtube.com/live/TupXHhdSrhg" target="_blank" rel="noopener">обзорное видео</a> (03:19–20:18), <a href="https://en.wikipedia.org/wiki/Greenplum" target="_blank" rel="noopener">Wikipedia: Greenplum</a>, <a href="https://www.i-programmer.info/news/84-database/17694-greenplums-cloudberry-fork-enters-apache-incubator-.html" target="_blank" rel="noopener">Cloudberry в Apache Incubator</a>, карточки Anki.</p>
+</section>
+
+<!-- ============ 2 DISTRIBUTION ============ -->
+<section class="level" data-lv="2" data-title="Распределение и перекос" data-short="Skew" hidden>
+  <div class="eyebrow">Уровень 2</div>
+  <h2>Куда попадёт строка</h2>
+  <p class="lead">Мы знаем, что данные лежат на сегментах. Этот уровень про то, как Greenplum решает, на какой именно сегмент положить каждую строку, и что бывает, если решить неудачно.</p>
+
+  <h3 class="sec">Сначала главное: сегмент и партиция — разные вещи</h3>
+  <p>Эти два слова часто путают, а на них держится весь этап. Сегмент отвечает на вопрос «где лежит строка», партиция — «к какой части таблицы она относится».</p>
+  <div class="concept" id="th-seg-vs-part">
+    <div class="cols2">
+      <div class="vs"><h3>Сегмент</h3><p><b>Где физически лежит строка.</b> В примерах у нас 8 сегментов, то есть 8 отдельных <span class="term" tabindex="0" data-g="inst">инстансов</span> PostgreSQL. Каждая строка таблицы хранится ровно на одном из них.</p><p>Решается ключом распределения: <code>DISTRIBUTED BY</code>.</p><p>Номер сегмента строки — служебная колонка <code>gp_segment_id</code>.</p></div>
+      <div class="vs"><h3>Партиция</h3><p><b>В какую логическую часть таблицы попала строка.</b> Например, «сентябрь 2025». Каждая партиция сама размазана по всем сегментам.</p><p>Решается ключом партиционирования: <code>PARTITION BY</code>. Тема уровня 5.</p><p>Список партиций — <span class="term" tabindex="0" data-g="view">системное представление</span> <code>pg_partitions</code>: встроенное «окно» в служебную информацию, которое читается как таблица.</p></div>
+    </div>
+  </div>
+  <p>На схеме то же самое: строки таблицы — это месяцы-партиции, колонки — сегменты. Каждая партиция разложена по всем сегментам, а каждый сегмент хранит кусочек каждой партиции.</p>
+  <div class="card" id="th-segpart-sch">
+    <div class="spgrid" id="spGrid"></div>
+    <div class="jlegend"><span>↓ партиция (PARTITION BY) — <b>какой месяц</b></span><span>→ сегмент (DISTRIBUTED BY) — <b>на каком инстансе</b></span><span>клетка — строки одного месяца на одном сегменте</span></div>
+  </div>
+  <p>Отсюда важное следствие: перекос (skew) — это неравномерность по <b>сегментам</b>. Поэтому дальше он проверяется через <code>gp_segment_id</code>, а не через партиции.</p>
+
+  <h3 class="sec">Что такое хеш</h3>
+  <p>Чтобы разложить строки по сегментам, Greenplum берёт значение ключа (колонки, указанной в <code>DISTRIBUTED BY</code>, например <code>ride_id</code>) и пропускает его через <b>хеш-функцию</b>. Она превращает любое значение (текст, число, дату) в число-«отпечаток»:</p>
+  <div class="concept" id="th-hash">
+    <div class="tablewrap"><table class="hashtbl">
+      <tr><th>Значение ключа</th><th>Хеш (число)</th><th>Что видно</th></tr>
+      <tr><td><code>ride_000017</code></td><td class="mono" data-hash="ride_000017"></td><td rowspan="2">Значения отличаются одним символом, а хеши совсем разные. Поэтому строки расходятся по сегментам равномерно.</td></tr>
+      <tr><td><code>ride_000018</code></td><td class="mono" data-hash="ride_000018"></td></tr>
+      <tr><td><code>ride_000017</code></td><td class="mono" data-hash="ride_000017"></td><td>То же значение — тот же хеш. Всегда.</td></tr>
+    </table></div>
+    <ul class="steps">
+      <li><b>Одинаковое значение всегда даёт одинаковый хеш.</b> Значит, все строки с одним значением ключа попадут на один сегмент.</li>
+      <li><b>Похожие значения дают совсем разные хеши</b>, поэтому строки расходятся равномерно.</li>
+      <li><b>Хеш работает только в одну сторону.</b> Из числа 2 066 514 604 не получить обратно <code>ride_000017</code>: возможных значений бесконечно много, а чисел-хешей около 4 млрд, поэтому часть информации неизбежно теряется, и разные значения иногда дают одинаковый хеш. Это не защита данных: Greenplum использует быструю «бытовую» хеш-функцию, а не криптографическую вроде SHA-256. Знать это полезно, чтобы не путать хеширование с шифрованием: по номеру сегмента ничего не узнать о данных, и для распределения это не нужно. Важна только повторяемость.</li>
+    </ul>
+    <p>Последний шаг — превратить хеш в номер сегмента. Самый простой способ — остаток от деления на число сегментов: <code>hash % 8</code>. Способы бывают разные, сравнение — чуть ниже, после калькулятора.</p>
+  </div>
+
+  <h3 class="sec">Посчитай сам: от значения до сегмента</h3>
+  <p>Выбери пример или введи своё значение. Ниже по шагам видно, как оно превращается в номер сегмента.</p>
+  <div class="card hashcalc" id="hashCalc">
+    <div class="hc-top">
+      <span class="src">Примеры:</span><div class="row" id="hPre"></div>
+    </div>
+    <label class="f" for="hIn">или своё значение ключа<input id="hIn" value="ride_000017"></label>
+    <div class="hflow" id="hSteps"></div>
+    <div class="hseg-title">Сегменты кластера · строка попадёт на подсвеченный</div>
+    <div class="hsegs" id="hSegs"></div>
+    <p class="src">Сравни <code>member</code> и <code>casual</code>: у ключа с двумя значениями заняты максимум 2 сегмента из 8. Строки с <code>NULL</code> в ключе тоже всегда попадают на один и тот же сегмент.</p>
+  </div>
+  <h3 class="sec">Как ещё превращают хеш в номер сегмента</h3>
+  <p>Остаток от деления понятен, но у него есть слабое место: если добавить в кластер сегмент, почти у всех строк изменится номер, и данные придётся перекладывать заново. Поэтому существуют и другие способы:</p>
+  <div class="tablewrap"><table>
+    <tr><th>Способ</th><th>Как работает</th><th>Плюс</th><th>Минус</th></tr>
+    <tr><td>Остаток от деления</td><td><code>hash % N</code></td><td>Просто и быстро</td><td>При изменении N переезжают почти все строки</td></tr>
+    <tr><td>Jump consistent hash</td><td>Хитрая формула от хеша и N</td><td>При добавлении сегмента переезжает только ~1/N строк</td><td>Сложнее в реализации</td></tr>
+    <tr><td>Диапазоны хешей</td><td>Каждому сегменту отдают свой диапазон чисел: 0–999 → seg0, 1000–1999 → seg1…</td><td>Диапазон можно поделить при расширении</td><td>Нужно хранить карту диапазонов</td></tr>
+    <tr><td>Виртуальные корзины</td><td>Хеш → одна из тысяч корзин, корзины распределены по сегментам по таблице</td><td>При расширении переносят целые корзины</td><td>Дополнительный уровень и служебная таблица</td></tr>
+  </table></div>
+  <p class="src">В Greenplum 6 у каждого типа данных своя хеш-функция, а номер сегмента считается через jump consistent hash. В тренажёре для наглядности используется остаток от деления: принцип тот же. Greenplum 6 по-прежнему самая распространённая версия на проектах, Greenplum 7 встречается реже.</p>
+
+  <h3 class="sec">Три способа распределить таблицу</h3>
+  <p>Ключ распределения указывают при создании таблицы в конце <code>CREATE TABLE</code>. Вариантов три: по хешу ключа, случайно или полной копией на каждый сегмент. У каждого своя область применения:</p>
+  <div class="concept" id="th-policies">
+    <div class="tablewrap"><table>
+      <tr><th>Политика</th><th>Как раскладывает</th><th>Когда брать</th><th>Плюсы</th><th>Минусы</th></tr>
+      <tr><td><code>DISTRIBUTED BY (col)</code></td><td>hash(col) → сегмент</td><td>Большие таблицы, JOIN и GROUP BY по ключу</td><td>JOIN и GROUP BY по ключу без пересылки строк</td><td>Ключ нужно выбрать так, чтобы строки легли ровно</td></tr>
+      <tr><td><code>DISTRIBUTED RANDOMLY</code></td><td>Равномерно, без привязки к значению</td><td>Хорошего ключа нет</td><td>Просто, нагрузка ровная</td><td>Любой JOIN и GROUP BY потребует пересылки строк</td></tr>
+      <tr><td><code>DISTRIBUTED REPLICATED</code></td><td>Полная копия на каждом сегменте</td><td><span class="term" tabindex="0" data-g="sprav">Справочники</span> (обычно до ~10 тыс. строк), которые часто джойнятся</td><td>JOIN локально, без пересылки</td><td>Место × число сегментов, нельзя партиционировать и обменивать партиции</td></tr>
+    </table></div>
+  </div>
+  <p>Посмотри, как Greenplum раскладывает таблицу из 8 строк по 4 сегментам при каждой политике. Выбери политику и нажми «Раздать»: строки по очереди подсвечиваются в таблице и уезжают на свой сегмент.</p>
+  <div class="card" id="polModel">
+    <div class="row" id="polBtns"></div>
+    <pre class="sql" id="polDdl"></pre>
+    <div class="dist2">
+      <div class="srctbl"><div class="src">Исходная таблица stg.stations</div><table class="mini" id="polTbl"></table></div>
+      <div class="dist2r"><div class="poleq mono" id="polEq">Нажми «Раздать», чтобы начать.</div><div class="segs jsegs" id="polSegs"></div></div>
+    </div>
+    <div class="row"><button class="btn" id="polPlay" type="button">▶ Раздать по сегментам</button><button class="ghost" id="polStep" type="button">Следующая строка</button><button class="ghost" id="polClr" type="button">Очистить сегменты</button></div>
+    <p class="expl" id="polTxt"></p>
+  </div>
+
+  <h3 class="sec">Если не указать DISTRIBUTED</h3>
+  <p>Таблица в Greenplum всегда как-то распределена: хранить её на одном сегменте нельзя. Если ключ не указан, Greenplum выберет его сам — первичный ключ или первую подходящую колонку — и предупредит об этом:</p>
+  <div class="console" id="th-nodist"><pre class="sql">CREATE TABLE stg.t (id int, name text);</pre><pre class="out">NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column named 'id'
+         as the Greenplum Database data distribution key for this table.
+HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data.
+       Make sure column(s) chosen are the optimal data distribution key to minimize skew.
+CREATE TABLE</pre></div>
+  <p>Выбранная колонка названа прямо в тексте предупреждения: <code>Using column named 'id'</code>. Если сообщение пропустил, ключ любой таблицы можно узнать позже:</p>
+  <div class="console"><pre class="sql">SELECT pg_get_table_distributedby('stg.t'::regclass);</pre><pre class="out"> pg_get_table_distributedby
+----------------------------
+ DISTRIBUTED BY (id)
+(1 row)</pre></div>
+  <p>Ещё два способа: в psql команда <code>\d+ stg.t</code> печатает строку <code>Distributed by: (id)</code>, а в DBeaver ключ виден на вкладке DDL таблицы.</p>
+  <p>Автоматический выбор может оказаться неудачным, поэтому ключ всегда указывают явно. Можно и несколько колонок сразу: <code>DISTRIBUTED BY (col1, col2)</code>, если их сочетание даёт ровное распределение.</p>
+
+  <h3 class="sec">Как выбрать ключ распределения</h3>
+  <p>Хороший ключ раскладывает строки ровно и совпадает с ключом соединения. Проверь кандидата по этим пунктам:</p>
+  <div class="concept" id="th-keyreq">
+    <div class="checklist">
+      <div><b>Много уникальных значений</b><span>Хорошо: <code>user_id</code>, <code>order_id</code>, <code>ride_id</code>. Плохо: пол, регион, статус с 2–3 значениями.</span></div>
+      <div><b>Значения не меняются</b><span>Если значение ключа обновляется, строку приходится физически переносить на другой сегмент.</span></div>
+      <div><b>Удобный тип</b><span>Лучше всего целые числа. Текст и даты можно. BOOLEAN и ENUM не подходят: значений слишком мало.</span></div>
+      <div><b>Участвует в JOIN и GROUP BY</b><span>Совпадает с ключом таблиц, с которыми соединяем: <code>orders BY (user_id)</code> и <code>users BY (user_id)</code>.</span></div>
+      <div><b>Не совпадает с ключом партиций</b><span>Ключ распределения и ключ партиционирования должны быть разными. Почему — на уровне 5.</span></div>
+      <div><b>Маленький справочник</b><span>Ключ не выбираем: <code>DISTRIBUTED REPLICATED</code>.</span></div>
+    </div>
+  </div>
+
+  <h3 class="sec">Перекос и как его измерить</h3>
+  <p>Если ключ выбран плохо, появляется перекос. Он бывает двух видов. <b>Перекос данных:</b> на одном сегменте строк сильно больше, чем на других. <b>Перекос вычислений:</b> строки лежат ровно, но типичный запрос работает только на одном сегменте, например при ключе по дате и запросах «за день». В обоих случаях кластер работает со скоростью самого медленного сегмента: если из 100 сегментов один обрабатывает 90% данных, весь запрос ждёт его.</p>
+  <p>Перекос данных измеряют коэффициентом:</p>
+  <div class="concept" id="th-skewcoef">
+    <div class="formula">коэфф. перекоса = max(строк на сегменте) / avg(строк на сегменте)</div>
+    <p>Пример: на двух сегментах 14 и 16 строк. Среднее 15, максимум 16, коэффициент 16 / 15 = 1,07.</p>
+    <div class="scale"><span class="ok">&lt; 1,1 — хорошо</span><span class="mid">1,1–1,25 — приемлемо</span><span class="bad">&gt; 1,25 — перекос</span></div>
+  </div>
+  <p class="src">На маленьких выборках коэффициент бывает 1,2–1,5 даже при хорошем ключе, на миллионах строк хороший ключ даёт почти идеальную картину. Шкала — по <a href="https://gpskew.rzvde.pro/" target="_blank" rel="noopener">gpskew.rzvde.pro</a>.</p>
+
+  <h3 class="sec">Симулятор: 4 000 поездок на 8 сегментов</h3>
+  <p>Теперь проверь формулу на практике. Выбирай разные ключи и смотри на столбики и коэффициент.</p>
+  <div class="card">
+    <div class="row" id="distKeys"></div>
+    <div class="bars" id="distBars"></div>
+    <div class="kpis">
+      <div class="kpi"><small>макс. на сегменте</small><b id="dMax">–</b></div>
+      <div class="kpi"><small>среднее</small><b id="dAvg">–</b></div>
+      <div class="kpi"><small>коэфф. перекоса</small><b id="dSkew">–</b></div>
+      <div class="kpi"><small>пустых сегментов</small><b id="dEmpty">–</b></div>
+    </div>
+    <p class="verdict" id="dVerdict"></p>
+    <pre class="sql" id="dSql"></pre>
+  </div>
+
+  <h3 class="sec">Как проверить перекос на настоящей таблице</h3>
+  <p>В DBeaver то же самое делается одним запросом: сгруппируй строки по служебной колонке <code>gp_segment_id</code>. Она есть у любой таблицы, создавать её не нужно.</p>
+  <div class="cols2" id="th-skew-check">
+    <div><p class="src">Ровно (ключ ride_id):</p><div class="console"><pre class="sql">SELECT gp_segment_id,
+       count(*) AS rows_cnt
+FROM stg.citibike_trips
+GROUP BY gp_segment_id
+ORDER BY gp_segment_id;</pre><pre class="out"> gp_segment_id | rows_cnt
+---------------+----------
+             0 |   612455
+             1 |   611980
+             2 |   612104
+             3 |   612731
+(4 rows)</pre></div></div>
+    <div><p class="src">Перекос (ключ rideable_type):</p><div class="console"><pre class="sql">SELECT gp_segment_id,
+       count(*) AS rows_cnt
+FROM stg.citibike_trips_bad
+GROUP BY gp_segment_id
+ORDER BY gp_segment_id;</pre><pre class="out"> gp_segment_id | rows_cnt
+---------------+----------
+             1 |  1470056
+             2 |   975502
+             3 |    49115
+(3 rows)</pre></div></div>
+  </div>
+  <p class="src">Числа условные. Во втором случае сегмента 0 нет в выводе вообще: на нём ноль строк.</p>
+
+  <h3 class="sec">JOIN в MPP простыми словами</h3>
+  <p>Распределение важно не только для ровной нагрузки. Оно решает, придётся ли гонять строки по сети при соединении таблиц. Представь 4 склада (сегмента). На складах лежат карточки поездок (таблица фактов) и карточки станций (<span class="term" tabindex="0" data-g="sprav">справочник</span>). Чтобы приклеить к поездке название станции, обе карточки должны оказаться <b>на одном складе</b>: склады не умеют заглядывать друг к другу, они могут только пересылать карточки по сети.</p>
+  <div class="card" id="joinModel">
+    <div class="jrow"><span class="src">trips (поездки, миллионы):</span><div class="row" id="jTrips"></div></div>
+    <div class="jrow"><span class="src">stations (справочник, 4 строки):</span><div class="row" id="jSt"></div></div>
+    <pre class="sql" id="jDdl"></pre>
+    <div class="jlegend"><span><i class="mchip sq" style="--c:var(--k0)">A</i> поездка со станцией A</span><span><i class="mchip st" style="--c:var(--k0)">A</i> строка справочника для станции A</span></div>
+    <div class="segs jsegs" id="jSegs"></div>
+    <div class="row"><button class="btn" id="jRun">▶ Выполнить JOIN</button><button class="ghost" id="jReset">Вернуть как было</button><span class="mono src" id="jMoved"></span></div>
+    <div class="jres" id="jRes"></div>
+  </div>
+  <p>Попробуй все варианты и обрати внимание на счётчик пересланных строк. Получается три способа собрать пары строк вместе:</p>
+  <div class="concept" id="th-join">
+    <ol class="steps">
+      <li><b>Строки уже вместе (co-located join).</b> Обе таблицы распределены по ключу, по которому соединяем. Одинаковый <code>station_id</code> даёт одинаковый хеш, значит поездка и её станция с самого начала на одном сегменте. Пересылать нечего.</li>
+      <li><b>Копия маленькой таблицы на каждом сегменте.</b> Заранее (<code>DISTRIBUTED REPLICATED</code>) или во время запроса (<code>Broadcast Motion</code>).</li>
+      <li><b>Переложить строки по ключу JOIN</b> во время запроса (<code>Redistribute Motion</code>).</li>
+    </ol>
+    <p><b>Почему третий способ «дорогой».</b> Каждую строку нужно прочитать, посчитать её хеш, упаковать и отправить по сети на другой сегмент, а тот должен её принять. Пример: 100 млн поездок по 200 байт — это 20 ГБ по сети на каждый такой запрос. При сети 10 Гбит/с только передача займёт около 20 секунд, при 1 Гбит/с — около 3 минут, и всё это время сегменты заняты не расчётом, а пересылкой. Для справочника из 2 000 строк те же действия занимают доли секунды.</p>
+    <p>Распределение по колонке, которая <b>не участвует</b> в JOIN (например, <code>name</code>), не помогает: строки с одинаковым <code>station_id</code> всё равно лежат на разных сегментах.</p>
+  </div>
+
+  <h3 class="sec">Когда таблиц три и все ключи не совместить</h3>
+  <p>В реальных запросах таблиц часто больше двух, и одного ключа на всех не хватает:</p>
+  <div class="concept" id="th-join3">
+<pre class="sql">SELECT …
+FROM order_items oi
+JOIN orders    o ON oi.order_id   = o.order_id
+JOIN customers c ON o.customer_id = c.customer_id;</pre>
+    <p><code>order_items</code> и <code>orders</code> распределены по <code>order_id</code>, <code>customers</code> — по <code>customer_id</code>. Оптимизатор выбирает меньшее зло:</p>
+    <ol class="steps">
+      <li>Локальный JOIN <code>order_items ⋈ orders</code> по <code>order_id</code> на каждом сегменте. Самая большая таблица не двигается.</li>
+      <li>Результат первого JOIN перераспределяется по <code>customer_id</code> (Redistribute Motion). Едет промежуточный результат, а не исходная таблица.</li>
+      <li>Локальный JOIN с <code>customers</code>.</li>
+    </ol>
+  </div>
+  <p>Правило: большую таблицу распределяй по ключу, по которому она чаще всего соединяется. Пример по мотивам <a href="https://gpskew.rzvde.pro/" target="_blank" rel="noopener">gpskew.rzvde.pro</a>.</p>
+
+  <h3 class="sec">Практика: напиши код</h3>
+  <div class="task" data-task="t_repl"></div>
+  <div class="task" data-task="t_skew"></div>
+
+  <h3 class="sec">Чекпоинт</h3>
+  <div class="quiz" data-quiz="dist"></div>
+</section>
+
+<!-- ============ 3 STORAGE ============ -->
+<section class="level" data-lv="3" data-title="Типы хранения" data-short="Хранение" hidden>
+  <div class="eyebrow">Уровень 3</div>
+  <h2>Heap или append-optimized, строки или колонки</h2>
+  <p class="lead">Распределение решает, на каком сегменте лежит строка. Тип хранения решает, как она записана на диск этого сегмента. От него зависят размер таблицы, скорость чтения и то, насколько больно делать UPDATE.</p>
+
+  <h3 class="sec">Два типа таблиц на диске</h3>
+  <p>В Greenplum есть <b>heap</b> — обычная таблица PostgreSQL, вариант по умолчанию, — и <b>append-optimized</b> (AO), рассчитанная на загрузку большими пачками. AO бывает строчной и колоночной. Нажимай операции по порядку и смотри, как меняются файлы одной и той же таблицы с колонками <code>id</code>, <code>station</code>, <code>duration</code>.</p>
+  <div class="card" id="th-storage-anim">
+    <div class="row" id="saOps">
+      <button class="ghost" data-sa="load">1. Загрузить пачку из 8 строк</button>
+      <button class="ghost" data-sa="update">2. UPDATE 2 строк</button>
+      <button class="ghost" data-sa="delete">3. DELETE 3 строк</button>
+      <button class="ghost" data-sa="select">4. SELECT avg(duration)</button>
+      <button class="ghost" data-sa="vacuum">5. VACUUM</button>
+      <button class="ghost" data-sa="full">6. VACUUM FULL</button>
+      <button class="ghost" data-sa="reset">↺ Сначала</button>
+    </div>
+    <div class="sa">
+      <div class="salane"><div class="sah"><b>heap</b><span class="mono src" id="saHeapN"></span></div><p class="src">Страницы по 4 строки целиком. Свободные места переиспользуются.</p><div class="sapages" id="saHeap"></div></div>
+      <div class="salane"><div class="sah"><b>AO, orientation=row</b><span class="mono src" id="saRowN"></span></div><p class="src">Каждая пачка дописывается в конец файла отдельным сжатым блоком.</p><div class="sablocks" id="saRow"></div></div>
+      <div class="salane"><div class="sah"><b>AO, orientation=column</b><span class="mono src" id="saColN"></span></div><p class="src">У каждой колонки свой файл, пачка дописывается в каждый.</p><div class="sacols" id="saCol"></div></div>
+    </div>
+    <div class="expl" id="saTxt">Начни с загрузки пачки строк.</div>
+    <div class="jlegend"><span><i class="cell live"></i> живая строка</span><span><i class="cell dead"></i> мёртвая (после UPDATE/DELETE)</span><span><i class="cell free"></i> свободное место</span><span><i class="cell rd"></i> прочитано запросом</span></div>
+  </div>
+
+  <h3 class="sec">Три решения при создании таблицы</h3>
+  <p>Схема показала разницу в поведении. При создании таблицы она задаётся параметрами в <code>WITH (…)</code>, и выбирать их нужно строго по порядку: следующий шаг открывается только после предыдущего.</p>
+  <div class="concept" id="th-storage">
+    <div class="tree">
+      <div class="tnode"><b>1. Тип таблицы</b><code>appendoptimized=false</code> — <b>heap</b>, обычная таблица PostgreSQL. Всегда строчная. Удобна для частых UPDATE и DELETE и маленьких таблиц. <b>На этом выбор заканчивается:</b> у heap нет ни колоночного хранения, ни сжатия.<br><code>appendoptimized=true</code> — <b>AO</b>, для массовой загрузки и аналитики средних и больших объёмов. Только у AO открываются шаги 2 и 3.</div>
+      <div class="tarrow">↓ только для AO</div>
+      <div class="tnode"><b>2. Ориентация</b><code>orientation=row</code> — строка хранится целиком, вариант по умолчанию. <code>orientation=column</code> — каждая колонка в своём файле, запрос читает только нужные колонки. Особенно выгодно для широких таблиц, когда запросы читают несколько колонок.</div>
+      <div class="tarrow">↓ только для AO</div>
+      <div class="tnode"><b>3. Сжатие</b><code>zstd</code> и <code>zlib</code> работают и с row, и с column. <code>rle_type</code> работает <b>только с column</b>. <code>compresslevel</code>: zstd 1–19, zlib 1–9. Выше уровень — меньше места, больше нагрузки на процессор.</div>
+    </div>
+  </div>
+  <div class="note"><b>Почему rle_type только для колонок.</b> RLE (run-length encoding, кодирование повторов) сжимает серии одинаковых значений подряд: <code>member, member, member … ×900</code> превращается в «member ×900». В колоночном файле значения одной колонки лежат подряд, и такие серии есть. В строковом хранении между двумя значениями <code>member_casual</code> стоят 12 других колонок, серий нет.</div>
+  <p class="src">Старое имя параметра — <code>appendonly</code>: <code>WITH (appendonly=true)</code> и <code>WITH (appendoptimized=true)</code> означают одно и то же. В старых проектах и статьях встретится первое.</p>
+
+  <h3 class="sec">Собери таблицу и посмотри результат</h3>
+  <p>Проверь правила на практике: выбери параметры, и тренажёр скажет, создастся ли таблица, сколько она займёт и сколько прочитает типичный аналитический запрос.</p>
+  <div class="card" id="th-validator">
+    <div class="row">
+      <label class="f" for="vAo">appendoptimized<select id="vAo"><option value="false">false (heap)</option><option value="true" selected>true (AO)</option></select></label>
+      <label class="f" for="vOr">orientation<select id="vOr"><option value="">не указано</option><option value="row">row</option><option value="column" selected>column</option></select></label>
+      <label class="f" for="vCt">compresstype<select id="vCt"><option value="">не указано</option><option value="zstd" selected>zstd</option><option value="zlib">zlib</option><option value="rle_type">rle_type</option></select></label>
+    </div>
+    <pre class="sql" id="vDdl"></pre>
+    <p class="verdict" id="vRes"></p>
+    <div class="vbars" id="vBars"></div>
+    <p class="src">Пропорции условные: 100 ГБ сырых данных, 13 колонок, запрос читает 3 из них. Реальные цифры зависят от данных.</p>
+  </div>
+
+  <h3 class="sec">Четыре типовых варианта</h3>
+  <p>На практике почти всегда встречается один из этих четырёх вариантов. Для таблицы поездок в этом этапе подходит третий.</p>
+  <div class="concept">
+    <div class="cols2">
+      <div><p class="src">Heap: справочник с частыми UPDATE</p>
+<pre class="sql">CREATE TABLE stg.stations (
+    station_id text,
+    name       text
+)
+DISTRIBUTED REPLICATED;</pre></div>
+      <div><p class="src">AO row + zstd: читаем строки целиком</p>
+<pre class="sql">CREATE TABLE stg.raw_log (…)
+WITH (
+    appendoptimized = true,
+    orientation     = row,
+    compresstype    = zstd,
+    compresslevel   = 3
+)
+DISTRIBUTED BY (id);</pre></div>
+      <div><p class="src">AO column + zstd: таблица фактов</p>
+<pre class="sql">CREATE TABLE stg.citibike_trips (…)
+WITH (
+    appendoptimized = true,
+    orientation     = column,
+    compresstype    = zstd,
+    compresslevel   = 3
+)
+DISTRIBUTED BY (ride_id);</pre></div>
+      <div><p class="src">Сжатие отдельной колонки: ENCODING</p>
+<pre class="sql">CREATE TABLE stg.t (
+    ride_id       text,
+    member_casual text
+        ENCODING (compresstype = rle_type)
+)
+WITH (appendoptimized = true,
+      orientation     = column)
+DISTRIBUTED BY (ride_id);</pre></div>
+    </div>
+  </div>
+
+  <h3 class="sec">Как устроена AO-таблица внутри</h3>
+  <p>Почему AO быстро грузится, но не любит UPDATE? Ответ в её устройстве:</p>
+  <div class="concept" id="th-ao-inside">
+    <p>Данные лежат в <b>сегментных файлах</b> из блоков произвольной длины, каждый блок сжимается отдельно. Всё, что heap-таблица умеет «из коробки» (видимость строк в транзакциях, удаление, индексы), AO-таблица реализует через <b>вспомогательные heap-таблицы</b>, например карту видимости, где отмечены удалённые строки. Поэтому UPDATE и DELETE в AO работают, но медленнее и оставляют мусор, а пачечная вставка идёт быстро.</p>
+  </div>
+
+  <h3 class="sec">VACUUM: уборка мёртвых строк</h3>
+  <p>Мусор после UPDATE и DELETE копится в таблицах любого типа. Убирает его команда <code>VACUUM</code>, которую ты видел в шагах 5 и 6 схемы выше.</p>
+  <div class="concept" id="th-vacuum">
+    <p>UPDATE и DELETE не стирают строку сразу: старая версия остаётся на диске как «мёртвая», чтобы параллельные транзакции могли её дочитать. <code>VACUUM</code> убирает этот мусор и заодно «замораживает» старые транзакции.</p>
+    <div class="cols2">
+      <div class="vs"><h3>VACUUM</h3><p>Помечает место мёртвых строк как свободное <b>внутри таблицы</b>. Файл на диске не уменьшается, но новые строки займут освободившиеся места. Таблица доступна для чтения и записи.</p></div>
+      <div class="vs"><h3>VACUUM FULL</h3><p>Перепаковывает таблицу: пишет новый файл только с живыми строками, старый удаляет. Место на диске реально освобождается. На всё время работы таблица заблокирована полностью (ACCESS EXCLUSIVE): ни чтения, ни записи.</p></div>
+    </div>
+<pre class="sql">VACUUM stg.citibike_trips;          -- освободить место внутри таблицы
+VACUUM FULL stg.citibike_trips;     -- уменьшить файл, таблица заблокирована
+VACUUM ANALYZE stg.citibike_trips;  -- уборка + обновить статистику</pre>
+  </div>
+  <p class="src">К внешним таблицам (external и foreign) VACUUM применять нельзя: их данные лежат не в Greenplum.</p>
+
+  <h3 class="sec">Индексы нужны редко</h3>
+  <p>В обычном PostgreSQL первым делом ускоряют запросы индексами. В Greenplum порядок другой, и вот почему.</p>
+  <div class="concept" id="th-index">
+    <p>Индекс — отдельная структура, которая помогает быстро найти строки по значению колонки, не читая всю таблицу. В Greenplum индекс строится <b>на каждом сегменте</b> для его части данных:</p>
+    <div class="idxsch">
+      <div><b>seg0</b><span class="f-t">table_1</span><span class="f-i">index table_1</span><span class="f-t">table_2</span><span class="f-i">index table_2</span></div>
+      <div><b>seg1</b><span class="f-t">table_1</span><span class="f-i">index table_1</span><span class="f-t">table_2</span><span class="f-i">index table_2</span></div>
+      <div><b>seg2</b><span class="f-t">table_1</span><span class="f-i">index table_1</span><span class="f-t">table_2</span><span class="f-i">index table_2</span></div>
+    </div>
+    <ul class="steps">
+      <li><b>Почему редко:</b> данные уже разрезаны по сегментам, а внутри — по партициям. Аналитический запрос читает большую долю строк, и прочитать всё параллельно выгоднее, чем ходить в индекс.</li>
+      <li><b>Цена:</b> индекс занимает место, не сжимается и замедляет вставку. Перед большой загрузкой индексы удаляют и создают заново после.</li>
+      <li><b>Когда нужен:</b> из многомиллионной таблицы часто достают единичные строки по значению.</li>
+      <li><b>Типы:</b> B-tree, Bitmap, GiST, SP-GiST, GIN. Bitmap удобен для колонок с небольшим числом значений.</li>
+    </ul>
+  </div>
+  <p>По умолчанию индексы не создают: основная оптимизация — правильное распределение, партиционирование и колоночное хранение.</p>
+
+  <h3 class="sec">Что прочитает диск: строки против колонок</h3>
+  <p>Последняя модель показывает главный выигрыш колоночного хранения на трёх разных запросах.</p>
+  <div class="card">
+    <div class="row"><select id="stQuery" aria-label="Запрос">
+        <option value="avg">SELECT avg(ended_at - started_at)</option>
+        <option value="grp">SELECT member_casual, count(*) GROUP BY 1</option>
+        <option value="all">SELECT * WHERE ride_id = '…'</option>
+      </select></div>
+    <div class="cols2">
+      <div><h3>orientation=row</h3><p class="src">Строка лежит целиком, читаем все колонки.</p><div class="blocks" id="stRow"></div></div>
+      <div><h3>orientation=column</h3><p class="src">Каждая колонка отдельно, читаем только нужные.</p><div class="blocks" id="stCol"></div></div>
+    </div>
+    <div class="kpis"><div class="kpi"><small>row: блоков</small><b id="stRowN">–</b></div><div class="kpi"><small>column: блоков</small><b id="stColN">–</b></div></div>
+  </div>
+
+  <h3 class="sec">Практика: напиши код</h3>
+  <div class="task" data-task="t_ao"></div>
+
+  <h3 class="sec">Чекпоинт</h3>
+  <div class="quiz" data-quiz="stor"></div>
+</section>
+
+<!-- ============ 4 EXPLAIN ============ -->
+<section class="level" data-lv="4" data-title="EXPLAIN и Motion" data-short="EXPLAIN" hidden>
+  <div class="eyebrow">Уровень 4</div>
+  <h2>Читаем план: где строки едут по сети</h2>
+  <p class="lead">На уровне 2 ты видел, что строки иногда приходится пересылать между сегментами. Здесь научимся видеть это в плане запроса и понимать, сколько это стоит.</p>
+
+  <h3 class="sec">Путь запроса через кластер</h3>
+  <p>Мастер превращает SQL в <b>план</b>: дерево шагов. В плане Greenplum есть шаги, которых нет в обычном PostgreSQL: <b>Motion</b>, то есть пересылка строк по interconnect. Куски плана между Motion называются <b>slice</b>, каждый slice выполняется на всех сегментах одновременно. Пройди запрос по шагам:</p>
+  <div class="card" id="th-flow">
+    <div class="row"><button class="ghost" id="flPrev">← шаг</button><button class="btn" id="flPlay">▶ Показать по шагам</button><button class="ghost" id="flNext">шаг →</button></div>
+<pre class="sql">SELECT s.name, count(*)
+FROM stg.citibike_trips t
+JOIN stg.stations s ON t.start_station_id = s.station_id
+WHERE t.started_at &gt;= '2025-09-01' AND t.started_at &lt; '2025-10-01'
+GROUP BY s.name;</pre>
+    <div class="dgwrap"><svg class="dg flow" id="flSvg" viewBox="0 0 720 400" role="img" aria-label="Схема выполнения запроса: мастер раздаёт план, slice 1 читает stations и рассылает её Broadcast Motion, slice 2 читает поездки, соединяет и частично агрегирует, Redistribute Motion перекладывает группы, slice 3 досчитывает и Gather Motion собирает результат на мастере">
+      <defs><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <g class="fs" data-s="1 2"><rect class="ms" x="270" y="8" width="180" height="40" rx="8"/><text x="360" y="26" class="mono b" text-anchor="middle">master</text><text x="360" y="41" class="sm" text-anchor="middle">строит план из 3 slice</text></g>
+      <g id="flDispatch" class="fl" data-s="2"></g>
+      <text x="8" y="100" class="sm">slice 1</text><text x="8" y="196" class="sm">slice 2</text><text x="8" y="292" class="sm">slice 3</text>
+      <g id="flS1"></g><g id="flBc" class="fl" data-s="3"></g>
+      <g id="flS2"></g><g id="flRd" class="fl" data-s="4"></g>
+      <g id="flS3"></g><g id="flGa" class="fl" data-s="5"></g>
+      <g class="fs" data-s="5 6"><rect class="ms" x="270" y="352" width="180" height="40" rx="8"/><text x="360" y="370" class="mono b" text-anchor="middle">master → client</text><text x="360" y="385" class="sm" text-anchor="middle">склеивает и отдаёт результат</text></g>
+      <text x="712" y="152" class="sm mlab" text-anchor="end" data-s="3">Broadcast Motion</text>
+      <text x="712" y="248" class="sm mlab" text-anchor="end" data-s="4">Redistribute Motion</text>
+      <text x="712" y="340" class="sm mlab" text-anchor="end" data-s="5">Gather Motion 4:1</text>
+    </svg></div>
+    <div class="expl" id="flTxt"></div>
+  </div>
+
+  <h3 class="sec">Три вида Motion</h3>
+  <p>В схеме встретились три разных пересылки. В плане они записываются как <code>Motion N:M</code>, где <b>N</b> — сколько процессов отправляют строки, <b>M</b> — сколько получают:</p>
+  <div class="concept" id="th-motion">
+    <div class="tablewrap"><table>
+      <tr><th>Узел</th><th>Кто → кому</th><th>Что происходит</th><th>Когда появляется</th></tr>
+      <tr><td><code>Gather Motion 8:1</code></td><td>8 сегментов → 1 мастер</td><td>Сегменты отдают свои результаты мастеру, он склеивает их и возвращает клиенту</td><td>Почти в каждом SELECT, на самом верху плана</td></tr>
+      <tr><td><code>Redistribute Motion 8:8</code></td><td>8 сегментов → 8 сегментов</td><td>Каждая строка уходит на сегмент hash(новый ключ). Строки <b>перетасовываются</b>, копий нет</td><td>JOIN или GROUP BY не по ключу распределения</td></tr>
+      <tr><td><code>Broadcast Motion 8:8</code></td><td>8 сегментов → 8 сегментов</td><td>Каждый сегмент отправляет свои строки <b>всем</b>. В итоге у всех полная копия</td><td>JOIN с маленькой таблицей не по её ключу</td></tr>
+    </table></div>
+  </div>
+  <p>Запоминалка: 8:1 — «собрать в одну точку», 8:8 с хешем — «перетасовать», 8:8 копией — «раздать всем». Посмотри на каждую пересылку отдельно:</p>
+  <div class="card" id="moCard">
+    <div class="row"><button class="ghost" data-mo="gather">Gather 8:1</button><button class="ghost" data-mo="redis">Redistribute 8:8</button><button class="ghost" data-mo="bcast">Broadcast 8:8</button><span class="src">цвет = значение station_id</span></div>
+    <div class="mo-master" id="moM"><b>master</b><div class="chips" id="moMc"></div></div>
+    <div class="segs" id="moSegs"></div>
+    <div class="row"><span class="mono src" id="moCnt"></span></div>
+    <p class="expl" id="moTxt">Выбери тип Motion: строки поедут по сети прямо на схеме.</p>
+  </div>
+
+  <h3 class="sec">Когда Motion не нужен</h3>
+  <p>Лучшая пересылка — та, которой нет. Если обе таблицы <b>разложены по сегментам по одной и той же колонке</b>, у колонки одинаковый тип и соединяем мы именно по ней, то пары строк для соединения <b>уже лежат на одном сегменте</b>. Каждый сегмент соединяет свои строки сам, в плане под JOIN не будет Motion. Это называется co-located join.</p>
+  <div class="concept" id="th-coloc">
+<pre class="sql">CREATE TABLE trips    (…) DISTRIBUTED BY (station_id);  -- тип text
+CREATE TABLE stations (…) DISTRIBUTED BY (station_id);  -- тот же тип text
+
+SELECT …
+FROM trips t
+JOIN stations s ON t.station_id = s.station_id;  -- соединяем по ключу распределения
+-- в плане: Hash Join без Motion под ним</pre>
+  </div>
+  <p class="src">Потрогать это руками можно в модели JOIN на уровне 2: выбери trips <code>BY (start_station_id)</code> и stations <code>BY (station_id)</code>.</p>
+
+  <h3 class="sec">Читаем настоящий план</h3>
+  <p>Так выглядит вывод <code>EXPLAIN</code> для запроса из начала уровня. Кликай по строкам, начиная снизу: план читается от чтения таблиц к результату.</p>
+  <div class="card">
+    <span class="src">trips DISTRIBUTED BY (ride_id), stations — 2 тыс. строк</span>
+<pre class="sql">EXPLAIN
+SELECT s.name, count(*)
+FROM stg.citibike_trips t
+JOIN stg.stations s
+  ON t.start_station_id = s.station_id
+WHERE t.started_at &gt;= '2025-09-01'
+  AND t.started_at &lt;  '2025-10-01'
+GROUP BY s.name;</pre>
+    <div class="plan" id="plan"></div>
+    <div class="expl" id="planExpl">Выбери строку, начиная снизу.</div>
+  </div>
+
+  <h3 class="sec">EXPLAIN и EXPLAIN ANALYZE</h3>
+  <p>У команды есть два режима: только показать план или выполнить запрос и показать, что было на самом деле.</p>
+  <div class="concept" id="th-explain">
+    <div class="cols2">
+      <div class="vs"><h3>EXPLAIN</h3><p>Показывает план, <b>не выполняя</b> запрос. У каждого узла оценки: <code>cost</code> (условная стоимость), <code>rows</code> (ожидаемое число строк), <code>width</code> (средний размер строки в байтах).</p></div>
+      <div class="vs"><h3>EXPLAIN ANALYZE</h3><p><b>Выполняет</b> запрос по-настоящему и добавляет к плану фактическое время, реальное число строк, память и число повторов узла. Осторожно с INSERT и DELETE: они тоже выполнятся.</p></div>
+    </div>
+    <div class="console"><pre class="sql">EXPLAIN ANALYZE SELECT …;</pre><pre class="out">Hash Join  (cost=48.0..9120.5 rows=410000 width=24)
+           (actual time=12.3..801.7 rows=4183210 loops=1)</pre></div>
+    <p>Оценка — 410 тысяч строк, на деле — 4,2 миллиона. Если <code>rows</code> и фактическое <code>actual rows</code> сильно расходятся, у оптимизатора устаревшая статистика. Её обновляет <code>ANALYZE</code>:</p>
+<pre class="sql">ANALYZE stg.citibike_trips;   -- обновить статистику после массовой загрузки</pre>
+  </div>
+
+  <h3 class="sec">Как ускорить запрос</h3>
+  <p>Всё, что было на уровнях 2–4, складывается в один порядок действий:</p>
+  <div class="concept" id="th-optim">
+    <div class="checklist">
+      <div><b>1. Диагностика</b><span><code>EXPLAIN ANALYZE</code>: найти дорогие узлы и Motion.</span></div>
+      <div><b>2. Статистика</b><span><code>ANALYZE</code> после массовых изменений. Особенно важна для колонок из WHERE, JOIN и GROUP BY.</span></div>
+      <div><b>3. Распределение</b><span>Ключ под JOIN, маленькие справочники — REPLICATED, следить за перекосом.</span></div>
+      <div><b>4. Партиционирование</b><span>Фильтр по ключу партиции, чтобы сработало отсечение. В плане ORCA это узел Partition Selector.</span></div>
+      <div><b>5. Motion</b><span>Минимизировать пересылки. Broadcast большой таблицы — самый дорогой вариант.</span></div>
+      <div><b>6. Тип JOIN</b><span><b>Hash Join</b> — основной для больших таблиц. <b>Nested Loop</b> — для маленьких. <b>Merge Join</b> — если данные уже отсортированы.</span></div>
+      <div><b>7. Оптимизатор</b><span><b>ORCA</b> (GPORCA) — по умолчанию, для аналитики. <b>Postgres Planner</b> — классический, лучше для простых транзакционных запросов. Планы у них разные.</span></div>
+      <div><b>8. Подсказки</b><span>Расширение <code>pg_hint_plan</code> позволяет задать тип чтения, тип JOIN, порядок соединений и поправить оценку строк.</span></div>
+    </div>
+  </div>
+
+  <h3 class="sec">Как избавиться от каждого Motion</h3>
+  <p>Пятый пункт подробнее: у каждой пересылки своя причина и своё лечение.</p>
+  <div class="concept" id="th-nomotion">
+    <div class="tablewrap"><table>
+      <tr><th>Motion</th><th>Почему появился</th><th>Что сделать</th></tr>
+      <tr><td><code>Broadcast</code></td><td>JOIN с таблицей не по её ключу, и оптимизатор решил разослать её всем</td><td>Маленькую таблицу сделать <code>DISTRIBUTED REPLICATED</code>. Включить ORCA: она лучше выбирает, какую таблицу рассылать. Параметр <code>gp_segments_for_planner</code> помогает планировщику верно оценить цену рассылки</td></tr>
+      <tr><td><code>Redistribute</code></td><td>Ключ JOIN не совпадает с ключом распределения</td><td>Распределить обе таблицы по ключу JOIN. Если таблицы большие и часто соединяются — пересоздать с правильным ключом</td></tr>
+      <tr><td><code>Gather</code></td><td>Результат нужно отдать клиенту: ORDER BY, LIMIT, финальная агрегация</td><td>Убрать нельзя, можно уменьшить: агрегировать на сегментах, а на мастер слать уже свёрнутые данные. LIMIT писать вместе с ORDER BY</td></tr>
+    </table></div>
+  </div>
+
+  <h3 class="sec">Дедупликация: DISTINCT или GROUP BY</h3>
+  <p>Частый вопрос на собеседовании: как убрать дубли и что быстрее.</p>
+  <div class="concept" id="th-dedup">
+<pre class="sql">SELECT DISTINCT ride_id, started_at
+FROM stg.citibike_trips;
+
+SELECT ride_id, started_at
+FROM stg.citibike_trips
+GROUP BY ride_id, started_at;
+
+SELECT DISTINCT ON (ride_id) *   -- одна строка на каждый ride_id
+FROM stg.citibike_trips
+ORDER BY ride_id, started_at DESC;</pre>
+  </div>
+  <p>Оба способа работают. В современных версиях оптимизатор строит для них <b>одинаковый план</b> с HashAggregate, разницы в скорости на практике нет. Greenplum делает это в два этапа: сначала убирает дубли на каждом сегменте, потом досчитывает итог.</p>
+  <div class="note">В 03.1 сравни <code>EXPLAIN ANALYZE</code> одинакового SELECT к external-таблице и к <code>stg.citibike_trips</code>. У внешней таблицы в плане будет <code>External Scan</code>, и при каждом запуске данные заново читаются из S3.</div>
+
+  <h3 class="sec">Практика: напиши код</h3>
+  <div class="task" data-task="t_explain"></div>
+
+  <h3 class="sec">Чекпоинт</h3>
+  <div class="quiz" data-quiz="expl"></div>
+</section>
+
+<!-- ============ 5 PARTITIONS ============ -->
+<section class="level" data-lv="5" data-title="Партиционирование" data-short="Партиции" hidden>
+  <div class="eyebrow">Уровень 5</div>
+  <h2>Партиции: таблица, нарезанная по месяцам</h2>
+  <p class="lead">Распределение раскладывает строки <b>по сегментам</b>. Партиционирование логически делит таблицу <b>по значению ключа</b>, например по месяцам. Это второе измерение таблицы, и в задании 03.1 тебе предстоит его создать.</p>
+
+  <h3 class="sec">Партиции и сегменты на одной схеме</h3>
+  <p>Каждая партиция всё равно лежит на всех сегментах. На схеме строки — партиции (месяцы), колонки — сегменты, клетка — кусок данных конкретного месяца на конкретном сегменте. Распределение решает, <b>в какую колонку</b> попадёт строка, партиционирование — <b>в какую строку</b>.</p>
+  <div class="card" id="th-partseg">
+    <div class="row">
+      <label class="f" for="psDist">ключ распределения<select id="psDist"><option value="ride">ride_id</option><option value="month">started_at (тот же, что у партиций)</option></select></label>
+      <label class="f" for="psQ">запрос<select id="psQ"><option value="all">SELECT count(*) за всё время</option><option value="sep" selected>WHERE started_at в сентябре</option></select></label>
+    </div>
+    <div class="psgrid" id="psGrid"></div>
+    <p class="verdict" id="psRes"></p>
+  </div>
+  <p>Переключи ключ распределения на <code>started_at</code> и увидишь главное правило: <b>ключ партиционирования ≠ ключ распределения</b>. Распределение нужно для параллельности и работает в JOIN и GROUP BY. Партиционирование нужно для отсечения и работает в WHERE. Распределяй по ключу соединения (<code>ride_id</code>, <code>customer_id</code>), партиционируй по фильтру (дата, статус, регион).</p>
+
+  <h3 class="sec">Зачем партиционировать</h3>
+  <p>Партиции дают три выгоды, и только одна из них про скорость запросов:</p>
+  <div class="concept" id="th-partwhy">
+    <ul class="steps">
+      <li><b>Отсечение (partition pruning).</b> Запрос с фильтром по ключу читает только нужные партиции, остальные пропускает.</li>
+      <li><b>Архивация и удаление.</b> Старый месяц можно удалить или выгрузить в S3 целиком (<code>DROP PARTITION</code>, обмен на внешнюю таблицу), а не чистить строки по одной. Само по себе партиционирование место не экономит: экономия появляется, когда старые партиции удаляют или «охлаждают».</li>
+      <li><b>Предсказуемость.</b> Загрузка и обслуживание идут по одной партиции, а не по всей таблице.</li>
+    </ul>
+  </div>
+
+  <h3 class="sec">Виды партиционирования</h3>
+  <p>Чаще всего режут по диапазону дат (<b>RANGE</b>), как в нашем задании. Ещё бывает деление по списку значений (<b>LIST</b>) и комбинация уровней через <code>SUBPARTITION</code>. Строки, которые не попали ни в один диапазон, ловит <code>DEFAULT PARTITION</code>; без неё такая вставка падает с ошибкой, а с ней default-партиция читается в каждом запросе.</p>
+  <div class="concept">
+<pre class="sql">-- LIST: по конкретным значениям
+PARTITION BY LIST (member_casual)
+(
+    PARTITION member VALUES ('member'),
+    PARTITION casual VALUES ('casual'),
+    DEFAULT PARTITION other
+)
+
+-- Композитное: месяцы, внутри каждого — тип велосипеда
+PARTITION BY RANGE (started_at)
+SUBPARTITION BY LIST (rideable_type)
+SUBPARTITION TEMPLATE
+(
+    SUBPARTITION classic  VALUES ('classic_bike'),
+    SUBPARTITION electric VALUES ('electric_bike'),
+    DEFAULT SUBPARTITION other
+)
+(
+    START ('2025-01-01'::timestamp) INCLUSIVE
+    END   ('2026-01-01'::timestamp) EXCLUSIVE
+    EVERY (INTERVAL '1 month')
+)</pre>
+  </div>
+
+  <h3 class="sec">Границы: START включается, END нет</h3>
+  <p>В RANGE-партиционировании легко ошибиться на границе. Разберёмся, куда попадает значение ровно на стыке месяцев.</p>
+  <div class="concept" id="th-bounds">
+<pre class="sql">PARTITION BY RANGE (started_at)
+(
+    START ('2025-01-01'::timestamp) INCLUSIVE   -- по умолчанию
+    END   ('2026-01-01'::timestamp) EXCLUSIVE   -- по умолчанию
+    EVERY (INTERVAL '1 month')
+)</pre>
+    <p>EVERY режет диапазон на куски вида <b>[начало, конец)</b>: левая граница входит, правая нет. Декабрьская партиция — это <code>[2025-12-01, 2026-01-01)</code>. Значение <code>2026-01-01 00:00</code> в неё не входит, а следующей партиции нет.</p>
+    <div class="ruler" id="ruler"></div>
+    <div class="row">
+      <label class="f" for="bVal">значение started_at<input type="datetime-local" id="bVal" value="2026-01-01T00:00" step="1"></label>
+      <label class="f" for="bDef" style="flex-direction:row;align-items:center;gap:8px;padding-top:16px"><input type="checkbox" id="bDef"> есть DEFAULT PARTITION</label>
+    </div>
+    <p class="verdict" id="bRes"></p>
+    <div class="row" id="bPresets"></div>
+  </div>
+  <p>Партиции не появляются сами. Новые месяцы у нас добавляет системный DAG <code>_system_create_greenplum_partitions</code>.</p>
+
+  <h3 class="sec">Конструктор для задания 03.1</h3>
+  <p>По заданию диапазон идёт от начала года первого месяца данных до начала года, следующего за последним месяцем, не включая его. Подставь свои месяцы и забери готовый фрагмент DDL.</p>
+  <div class="card">
+    <div class="row">
+      <label class="f" for="pFirst">первый месяц данных<input type="month" id="pFirst" value="2024-08"></label>
+      <label class="f" for="pLast">последний месяц данных<input type="month" id="pLast" value="2025-09"></label>
+      <label class="f" for="pDef" style="flex-direction:row;align-items:center;gap:8px;padding-top:16px"><input type="checkbox" id="pDef"> DEFAULT PARTITION</label>
+    </div>
+    <div id="pStrip"></div>
+    <div class="kpis"><div class="kpi"><small>партиций</small><b id="pN">–</b></div><div class="kpi"><small>с данными</small><b id="pData">–</b></div></div>
+    <pre class="sql" id="pDdl"></pre>
+  </div>
+
+  <h3 class="sec">Как посмотреть партиции</h3>
+  <p>Созданные партиции видны в <span class="term" tabindex="0" data-g="view">системном представлении</span> <code>pg_catalog.pg_partitions</code>. Этот же запрос станет основой проверки в DAG на шаге 03.4.</p>
+  <div class="console" id="th-pgpart"><pre class="sql">SELECT partitiontablename,
+       partitionrangestart,
+       partitionrangeend
+FROM pg_catalog.pg_partitions
+WHERE schemaname = 'stg'
+  AND tablename  = 'citibike_trips'
+ORDER BY partitionrank;</pre><pre class="out">     partitiontablename     |      partitionrangestart      |       partitionrangeend
+----------------------------+-------------------------------+-------------------------------
+ citibike_trips_1_prt_1     | '2024-01-01 00:00:00'::timestamp | '2024-02-01 00:00:00'::timestamp
+ citibike_trips_1_prt_2     | '2024-02-01 00:00:00'::timestamp | '2024-03-01 00:00:00'::timestamp
+ …
+ citibike_trips_1_prt_24    | '2025-12-01 00:00:00'::timestamp | '2026-01-01 00:00:00'::timestamp
+(24 rows)</pre></div>
+  <p class="src">Каждая партиция — отдельная физическая таблица с именем вида <code>citibike_trips_1_prt_9</code>. К ней можно обратиться напрямую, но грузить данные правильнее через родительскую таблицу или EXCHANGE.</p>
+
+  <h3 class="sec">Партиционирование задаётся при создании</h3>
+  <p>В Greenplum 6 нет команды, которая превращает обычную таблицу в партиционированную: <code>ALTER TABLE … PARTITION BY</code> не существует. <code>ADD PARTITION</code> только добавляет ещё одну партицию в таблицу, которая <b>уже</b> партиционирована. Выход — пересоздать таблицу:</p>
+  <div class="concept" id="th-like">
+<pre class="sql">-- 1. Новая таблица: колонки и распределение из старой, плюс партиции
+CREATE TABLE stg.trips_new (LIKE stg.trips)
+PARTITION BY RANGE (started_at)
+(
+    START ('2024-01-01'::timestamp) INCLUSIVE
+    END   ('2026-01-01'::timestamp) EXCLUSIVE
+    EVERY (INTERVAL '1 month')
+);
+
+-- 2. Перелить данные
+INSERT INTO stg.trips_new
+SELECT * FROM stg.trips;
+
+-- 3. Подменить старую таблицу новой
+DROP TABLE stg.trips;
+ALTER TABLE stg.trips_new RENAME TO trips;</pre>
+  </div>
+  <div class="note"><b>Обрати внимание:</b> <code>CREATE TABLE x (LIKE t)</code> копирует колонки и распределение, но <b>не копирует партиции</b>. Если партиции нужны, их описывают явно, как в шаге 1. Для промежуточной таблицы в 03.2 это как раз удобно: ей партиции не нужны.</div>
+
+  <h3 class="sec">Отсечение партиций: какой фильтр работает</h3>
+  <p>Оптимизатор пропускает партиции, если в фильтре <b>голая колонка ключа</b> сравнивается с константой операторами <code>=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>&gt;=</code>, а функции в фильтре STABLE или IMMUTABLE (их результат известен заранее). Любая функция вокруг колонки (<code>date_trunc</code>, <code>extract</code>, приведение типа) отключает отсечение. Выбери фильтр и посмотри, сколько партиций прочитается:</p>
+  <div class="card">
+    <select id="elimQ" aria-label="Фильтр">
+      <option value="0">started_at &gt;= '2025-09-01' AND started_at &lt; '2025-10-01'</option>
+      <option value="1">started_at &gt;= '2025-06-01'</option>
+      <option value="2">date_trunc('month', started_at) = '2025-09-01'</option>
+      <option value="3">started_at &gt; clock_timestamp() - interval '30 days'</option>
+      <option value="4">member_casual = 'member'</option>
+    </select>
+    <div id="elimStrip"></div>
+    <p class="expl" id="elimExpl"></p>
+  </div>
+  <p class="src">Частый вопрос на собеседовании: «Как не сканировать всю большую таблицу ради последних месяцев?» Ответ: партиции по дате + колоночное AO-хранение. Тогда читаются только нужные месяцы и только нужные колонки.</p>
+
+  <h3 class="sec">Практика: напиши код</h3>
+  <div class="task" data-task="t_part"></div>
+  <div class="task" data-task="t_pgpart"></div>
+
+  <h3 class="sec">Чекпоинт</h3>
+  <div class="quiz" data-quiz="part"></div>
+  <p class="src">Первоисточник: <a href="https://docs.arenadata.io/ru/ADB/current/concept/data-model/tables/partitioning.html" target="_blank" rel="noopener">Arenadata, «Партиционирование»</a>.</p>
+</section>
+
+<!-- ============ 6 EXCHANGE ============ -->
+<section class="level" data-lv="6" data-title="EXCHANGE PARTITION" data-short="Exchange" hidden>
+  <div class="eyebrow">Уровень 6</div>
+  <h2>Подмена партиции за одну операцию</h2>
+  <p class="lead">Партиции созданы. Теперь их нужно наполнять так, чтобы повторная загрузка месяца не создавала дублей. Для этого в задании 03.2 используется EXCHANGE PARTITION.</p>
+
+  <h3 class="sec">Как работает обмен</h3>
+  <p>Прямая вставка в партиционированную таблицу неэффективна, и Arenadata рекомендует другой путь: залить данные в отдельную промежуточную (staging) таблицу и поменять её местами с партицией. После <code>EXCHANGE</code> партиция содержит данные промежуточной таблицы, а промежуточная таблица — старые данные партиции. Меняются только метаданные, строки никуда не копируются.</p>
+  <div class="concept" id="th-xch">
+    <ul class="steps">
+      <li><code>WITH VALIDATION</code> проверяет, что все строки попадают в границы партиции. <code>WITHOUT VALIDATION</code> пропускает проверку, и при ошибке в данных запросы начнут возвращать неверный результат.</li>
+      <li>Обмен разрешён только для партиций нижнего уровня, нельзя менять местами с другой партиционированной таблицей или с <code>DISTRIBUTED REPLICATED</code>.</li>
+      <li>Default-партицию обменять нельзя, пока не включён параметр <code>gp_enable_exchange_default_partition</code>.</li>
+      <li>Структура колонок и распределение должны совпадать. Тип хранения может отличаться: обмен с heap-таблицей сделает партицию heap. Поэтому в задании промежуточную таблицу создают с теми же <code>WITH (…)</code>.</li>
+    </ul>
+  </div>
+
+  <h3 class="sec">Пошаговая модель: месяц 2025-09</h3>
+  <p>Пройди сценарий по шагам. Затем включи «повторный запуск» и пройди ещё раз: партиция останется с теми же 10 строками, а старая версия уйдёт в промежуточную таблицу.</p>
+  <div class="card">
+    <label class="f" for="xRerun" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="xRerun"> повторный запуск (партиция уже заполнена)</label>
+    <div class="xch">
+      <div class="tbl real" id="xExt"><h5>ext_raw_valid (+late)</h5><small>внешние, читают S3</small><div class="rows" id="xExtR"></div><div class="cnt" id="xExtC"></div></div>
+      <div class="tbl" id="xInt"><h5>stg.intermediate</h5><small>LIKE target, те же WITH</small><div class="rows" id="xIntR"></div><div class="cnt" id="xIntC"></div></div>
+      <div class="tbl real" id="xTgt"><h5>citibike_trips · 2025-09</h5><small>партиция целевой таблицы</small><div class="rows" id="xTgtR"></div><div class="cnt" id="xTgtC"></div></div>
+    </div>
+    <pre class="sql" id="xSql"></pre>
+    <div class="row"><button class="ghost" id="xPrev">← шаг</button><button class="btn" id="xNext">Следующий шаг →</button><span class="mono src" id="xStep"></span></div>
+  </div>
+
+  <h3 class="sec">Почему не просто INSERT</h3>
+  <p>Модель показала главное свойство обмена. У него есть название: загрузка <b>идемпотентна</b>, если повторный запуск даёт тот же результат, что и первый. В DAG месяц будет загружаться повторно (догоняющие запуски catchup, ретраи, окно в 2 месяца), поэтому это обязательно.</p>
+  <div class="cols2" id="th-idem">
+    <div><p class="src">INSERT дописывает строки:</p>
+<pre class="sql">INSERT INTO stg.citibike_trips
+SELECT * FROM stg.ext_raw_valid_2025_09;
+-- 1-й запуск: в сентябре N строк
+-- 2-й запуск: в сентябре 2N строк (дубли)</pre></div>
+    <div><p class="src">EXCHANGE заменяет партицию целиком:</p>
+<pre class="sql">ALTER TABLE stg.citibike_trips
+EXCHANGE PARTITION FOR ('2025-09-01'::timestamp)
+WITH TABLE stg.citibike_trips_2025_09
+WITH VALIDATION;
+-- 1-й запуск: N строк
+-- 2-й запуск: снова N строк</pre></div>
+  </div>
+
+  <h3 class="sec">Собери сценарий 03.2</h3>
+  <p>Теперь собери весь сценарий целиком: нажимай шаги в том порядке, в котором выполнишь их в DBeaver.</p>
+  <div class="card">
+    <div class="row"><button class="ghost" id="ordReset">Перемешать заново</button></div>
+    <div class="order" id="ord"></div>
+    <p class="verdict" id="ordMsg"></p>
+  </div>
+
+  <h3 class="sec">Практика: напиши код</h3>
+  <div class="task" data-task="t_xch"></div>
+
+  <h3 class="sec">Чекпоинт</h3>
+  <div class="quiz" data-quiz="xch"></div>
+</section>
+
+<!-- ============ 7 PXF ============ -->
+<section class="level" data-lv="7" data-title="PXF и внешние таблицы" data-short="PXF" hidden>
+  <div class="eyebrow">Уровень 7</div>
+  <h2>PXF: S3 как таблица в SQL</h2>
+  <p class="lead">Откуда берутся данные для промежуточной таблицы? Из Parquet-файлов в S3, которые Greenplum читает через PXF и внешние таблицы.</p>
+
+  <h3 class="sec">Что такое PXF</h3>
+  <p><b>PXF</b> (Platform Extension Framework) — сервис, который запущен на хостах сегментов. Сегменты обращаются к нему, и он параллельно читает файлы из внешнего источника. Мастер в чтении данных не участвует.</p>
+  <div class="concept" id="th-pxf">
+    <ul class="steps">
+      <li><b>Источники:</b> S3 и совместимые хранилища (Yandex Object Storage, MinIO), HDFS (файловая система Hadoop), Hive, HBase, СУБД через JDBC.</li>
+      <li><b>Форматы:</b> text/CSV, JSON, Avro, ORC, Parquet.</li>
+      <li><b>PROFILE</b> = источник + формат, например <code>s3:parquet</code>. <b>SERVER</b> — имя каталога с конфигом подключения на стороне PXF (адрес и ключи бакета). В нашем проекте это <code>yandex-public</code>, поэтому ключи не попадают в DDL.</li>
+      <li><b>Filter pushdown:</b> условия <code>WHERE</code> применяются на стороне источника. <b>Column projection:</b> из Parquet читаются только нужные колонки.</li>
+      <li><b>FORMATTER:</b> <code>pxfwritable_import</code> — для обычной (читающей) внешней таблицы, <code>pxfwritable_export</code> — для <code>WRITABLE</code>-таблицы, которая пишет в источник. Подсказка: import — данные приходят <b>в</b> Greenplum.</li>
+      <li>Внешняя таблица не хранит данные. Каждый SELECT заново идёт в S3, локальной статистики нет. Поэтому для работы данные материализуют в обычную таблицу.</li>
+    </ul>
+  </div>
+
+  <h3 class="sec">Внешние таблицы: какие бывают</h3>
+  <p><b>External table</b> описывает данные, которые физически лежат вне Greenplum: в файлах, S3, HDFS, другой СУБД. Greenplum ничего к себе не копирует и читает данные на лету при каждом запросе.</p>
+  <div class="concept" id="th-ext">
+    <div class="cols2">
+      <div class="vs"><h3>Readable (по умолчанию)</h3><p>Только чтение: <code>SELECT</code> из внешнего источника. Для PXF — <code>FORMATTER='pxfwritable_import'</code>.</p></div>
+      <div class="vs"><h3>Writable</h3><p>Только запись наружу, например выгрузка в S3: <code>CREATE WRITABLE EXTERNAL TABLE</code>, <code>INSERT INTO</code>. Для PXF — <code>pxfwritable_export</code>.</p></div>
+    </div>
+<pre class="sql">-- выгрузка старого месяца в S3 через writable external table
+CREATE WRITABLE EXTERNAL TABLE stg.ext_archive_2024_08 (LIKE stg.citibike_trips)
+LOCATION ('pxf://your-bucket/archive/2024-08?PROFILE=s3:parquet&SERVER=yandex-public')
+FORMAT 'CUSTOM' (FORMATTER = 'pxfwritable_export');
+
+INSERT INTO stg.ext_archive_2024_08
+SELECT * FROM stg.citibike_trips
+WHERE started_at >= '2024-08-01' AND started_at < '2024-09-01';</pre>
+  </div>
+  <p><b>Foreign tables</b> — стандартный механизм PostgreSQL (Foreign Data Wrappers, <code>CREATE FOREIGN TABLE</code>). Делают то же самое, но через другой синтаксис. В Greenplum почти всегда используют external tables с PXF, foreign tables встречаются редко.</p>
+
+  <h3 class="sec">Конструктор external table для 03.1</h3>
+  <p>Собери DDL внешней таблицы под свой месяц. Структуру пути сверь с тем, как Stage 2 раскладывает файлы в S3.</p>
+  <div class="card">
+    <div class="row">
+      <label class="f" for="xbB">bucket<input id="xbB" value="your-bucket" style="width:140px"></label>
+      <label class="f" for="xbL">источник<select id="xbL"><option>raw_valid</option><option>raw_valid_late</option></select></label>
+      <label class="f" for="xbY">year<input id="xbY" type="number" value="2025" style="width:90px"></label>
+      <label class="f" for="xbM">month<input id="xbM" type="number" min="1" max="12" value="9" style="width:70px"></label>
+      <label class="f" for="xbI" style="flex-direction:row;align-items:center;gap:8px;padding-top:16px"><input type="checkbox" id="xbI" checked> IGNORE_MISSING_PATH</label>
+      <button class="copy" data-copy="xbOut">копировать</button>
+    </div>
+    <pre class="sql" id="xbOut"></pre>
+    <p class="expl" id="xbExpl"></p>
+  </div>
+
+  <h3 class="sec">Почему Parquet быстрее CSV</h3>
+  <p>Формат файлов в S3 сильно влияет на скорость. Замер из статьи Habr / OTUS: 15 млн строк в S3, один и тот же запрос.</p>
+  <div class="card">
+    <div class="lc">
+      <div class="lr"><span>CSV, <code>s3:csv</code></span><div class="tr"><i style="width:100%"></i><span>21,5 с</span></div></div>
+      <div class="lr par"><span>Parquet, <code>s3:parquet</code></span><div class="tr"><i style="width:18.6%"></i><span>4 с</span></div></div>
+    </div>
+  </div>
+  <p>Ускорение примерно в 5 раз дают pushdown и чтение одной нужной колонки вместо всей строки.</p>
+
+  <h3 class="sec">Практика: напиши код</h3>
+  <div class="task" data-task="t_ext"></div>
+
+  <h3 class="sec">Чекпоинт</h3>
+  <div class="quiz" data-quiz="pxf"></div>
+  <p class="src">Первоисточник: <a href="https://habr.com/ru/companies/otus/articles/682990/" target="_blank" rel="noopener">Habr / OTUS</a>, до раздела «Интеграция с OLTP СУБД».</p>
+</section>
+
+<!-- ============ 8 LOAD ============ -->
+<section class="level" data-lv="8" data-title="Способы загрузки" data-short="Загрузка" hidden>
+  <div class="eyebrow">Уровень 8</div>
+  <h2>Способы загрузки: через мастер или через сегменты</h2>
+  <p class="lead">PXF — не единственный способ залить данные в Greenplum. Последний уровень теории сравнивает способы и объясняет, почему для нашего этапа выбран именно PXF.</p>
+
+  <h3 class="sec">Куда идут данные</h3>
+  <p>Главное различие из доклада Т. Дидовой: идут ли данные <b>через мастер</b> (не параллельно) или <b>сразу в сегменты</b> (параллельно). Сначала разложи способы сам.</p>
+  <div class="card" id="th-load">
+    <div class="sorter" id="srt"></div>
+    <div class="row"><button class="btn" id="srtCheck">Проверить</button></div>
+    <p class="verdict" id="srtMsg"></p>
+  </div>
+
+  <h3 class="sec">Скорость из доклада</h3>
+  <p>Разница видна на замерах: строки в секунду, логарифмическая шкала.</p>
+  <div class="card">
+    <div class="legend"><span><i style="background:var(--muted)"></i>через мастер (замер на 100 тыс.)</span><span><i style="background:var(--accent)"></i>параллельно (замер на 10 млн)</span></div>
+    <div class="lc" id="lc"></div>
+    <div class="axis"><div></div><div><span>10</span><span>100</span><span>1 тыс.</span><span>10 тыс.</span><span>100 тыс.</span><span>1 млн</span></div></div>
+  </div>
+  <p class="src">Объёмы разные: последовательные способы мерили на 100 тыс. строк, параллельные — на 10 и 20 млн. На 20 млн: PXF 64 с, gpfdist 78 с, Spark 216 с. Кластер: 2 мастера, 4 сегмента.</p>
+
+  <h3 class="sec">Плюсы и минусы каждого способа</h3>
+  <p>Скорость — не единственный критерий. У параллельных способов есть цена настройки и обслуживания:</p>
+  <div class="tablewrap"><table>
+    <tr><th>Способ</th><th>Плюсы</th><th>Минусы</th></tr>
+    <tr><td>INSERT</td><td>Ничего не нужно настраивать, удобно отлаживать</td><td>Нагружает мастер, не тянет большие объёмы</td></tr>
+    <tr><td>COPY</td><td>Самый быстрый из непараллельных</td><td>Нагружает мастер, падает на ошибках в данных</td></tr>
+    <tr><td>PXF</td><td>Прямое подключение к S3, HDFS, JDBC; достаточно SQL</td><td>Сложно администрировать, ест ресурсы сегментов, зависит от раскладки данных в источнике</td></tr>
+    <tr><td>gpfdist</td><td>Оптимизированное чтение, настраиваемые параметры</td><td>Только файлы CSV/TSV (в т.ч. gzip/bzip2), зависит от сети, нужно управлять экземплярами и портами</td></tr>
+    <tr><td>Spark connector</td><td>Сложные трансформации, Kafka и другие источники</td><td>Сложная настройка и совместимость версий</td></tr>
+  </table></div>
+
+  <h3 class="sec">Инструменты и правила загрузки</h3>
+  <p>Главный принцип: большие объёмы грузятся <b>параллельно, сразу в сегменты, минуя мастер</b>. Обычные драйверы (JDBC, ODBC, psycopg2) так не умеют: всё идёт через мастер, и он становится бутылочным горлышком.</p>
+  <div class="concept" id="th-loadtools">
+    <div class="tablewrap"><table>
+      <tr><th>Инструмент</th><th>Что это</th></tr>
+      <tr><td><code>INSERT</code></td><td>Штучные вставки, самый медленный способ</td></tr>
+      <tr><td><code>COPY</code></td><td>Читает файл через мастер последовательно. Справочники и разовые загрузки небольших объёмов. Оценки разные: карточки Anki говорят «до 10–20 тыс. строк», доклад — «до ~1 млн»</td></tr>
+      <tr><td>PXF</td><td>Параллельное чтение из S3, HDFS, Hive, других СУБД. Каждый сегмент читает свою часть. Основной способ интеграции с внешними хранилищами</td></tr>
+      <tr><td>gpfdist</td><td>Лёгкий HTTP-сервер на ETL-хосте раздаёт файлы сегментам напрямую. Внешняя таблица с <code>LOCATION ('gpfdist://host:port/file')</code>, затем <code>INSERT … SELECT</code>. Несколько процессов на разных портах ускоряют загрузку</td></tr>
+      <tr><td>gpload</td><td>Обёртка над gpfdist с настройкой через YAML. Удобно, но создаёт временные внешние таблицы, которые засоряют каталог</td></tr>
+      <tr><td>GPSS</td><td>Greenplum Streaming Server: потоковая загрузка из Kafka или S3, поддерживает INSERT, UPDATE, MERGE</td></tr>
+      <tr><td>Spark, Kafka</td><td>Прямые коннекторы для сложных трансформаций и потоков</td></tr>
+    </table></div>
+  </div>
+  <p>И четыре правила, которые стоит соблюдать при любой большой загрузке:</p>
+  <div class="checklist">
+    <div><b>До загрузки</b><span>Удалить индексы и создать их после: построить индекс заново быстрее, чем обновлять его на каждой строке.</span></div>
+    <div><b>Автостатистика</b><span>Отключить на время загрузки: <code>SET gp_autostats_mode = NONE;</code></span></div>
+    <div><b>После загрузки</b><span>Выполнить <code>ANALYZE</code>, чтобы у оптимизатора была свежая статистика.</span></div>
+    <div><b>Проверка</b><span>Убедиться, что строки легли ровно: <code>SELECT gp_segment_id, count(*) … GROUP BY 1</code>. Если были ошибки — <code>VACUUM</code>.</span></div>
+  </div>
+  <div class="note">Вывод доклада: до ~1 млн строк хватает COPY, INSERT удобен для отладки. Для больших объёмов нужен параллельный способ. Источник — СУБД или Hadoop/S3 → PXF. Только CSV/TSV-файлы → gpfdist. Нужны сложные трансформации → Spark. У нас Parquet в S3, поэтому PXF.</div>
+
+  <h3 class="sec">Практика: напиши код</h3>
+  <div class="task" data-task="t_load"></div>
+
+  <h3 class="sec">Чекпоинт</h3>
+  <div class="quiz" data-quiz="load"></div>
+  <p class="src">Первоисточник: <a href="https://squidex.jugru.team/api/assets/srm/5061589c-532b-4a85-a80c-d8f73c8cc0fa/konferenciya-smart-data-tanya-didova-greenplum.pdf" target="_blank" rel="noopener">слайды доклада</a>.</p>
+</section>
+
+<!-- ============ 9 FINAL ============ -->
+<section class="level" data-lv="9" data-title="Финальный чекпоинт" data-short="Финал" hidden>
+  <div class="eyebrow">Уровень 9</div>
+  <h2>Финальный чекпоинт и шпаргалка к практике</h2>
+  <h3 class="sec">Финальный чекпоинт</h3>
+  <p class="lead">Вопросы по всем уровням, часть с подвохом. Набери 80% и больше, и можно идти в DBeaver.</p>
+  <div class="quiz" data-quiz="final"></div>
+  <div class="card" id="finalRes" hidden><div class="tag">Результат</div><div class="score" id="finalScore"></div><p id="finalTxt"></p></div>
+  <h3 class="sec">Шпаргалка к 03.1–03.3</h3>
+  <p>Готовые запросы для практики. Кнопка «копировать» кладёт код в буфер обмена.</p>
+  <div class="card"><div class="card-h"><div class="tag">Целевая таблица</div><button class="copy" data-copy="cs1">копировать</button></div>
+<pre class="sql" id="cs1">CREATE TABLE stg.citibike_trips (
+    ride_id            text,
+    rideable_type      text,
+    started_at         timestamp,
+    ended_at           timestamp,
+    start_station_name text,
+    start_station_id   text,
+    end_station_name   text,
+    end_station_id     text,
+    start_lat          float8,
+    start_lng          float8,
+    end_lat            float8,
+    end_lng            float8,
+    member_casual      text
+)
+WITH (
+    appendoptimized = true,
+    orientation     = column,
+    compresstype    = zstd,
+    compresslevel   = 3
+)
+DISTRIBUTED BY (ride_id)
+PARTITION BY RANGE (started_at)
+(
+    START ('2024-01-01'::timestamp) INCLUSIVE
+    END   ('2026-01-01'::timestamp) EXCLUSIVE
+    EVERY (INTERVAL '1 month')
+);
+-- колонки сверь со схемой своего Parquet; параметры WITH — по своему выбору</pre></div>
+  <div class="card"><div class="card-h"><div class="tag">Проверки</div><button class="copy" data-copy="cs2">копировать</button></div>
+<pre class="sql" id="cs2">-- Какие партиции есть
+SELECT partitiontablename,
+       partitionrangestart,
+       partitionrangeend
+FROM pg_catalog.pg_partitions
+WHERE schemaname = 'stg'
+  AND tablename  = 'citibike_trips'
+ORDER BY partitionrank;
+
+-- Строки по месяцам (до и после загрузки)
+SELECT date_trunc('month', started_at) AS month_start,
+       count(*)                        AS rows_cnt
+FROM stg.citibike_trips
+GROUP BY 1
+ORDER BY 1;
+
+-- Перекос по сегментам
+SELECT gp_segment_id,
+       count(*) AS rows_cnt
+FROM stg.citibike_trips
+GROUP BY gp_segment_id
+ORDER BY gp_segment_id;</pre></div>
+  <div class="card"><div class="card-h"><div class="tag">Загрузка месяца через обмен</div><button class="copy" data-copy="cs3">копировать</button></div>
+<pre class="sql" id="cs3">-- 1. Промежуточная таблица: колонки и распределение как у целевой
+CREATE TABLE stg.citibike_trips_2025_09 (LIKE stg.citibike_trips)
+WITH (
+    appendoptimized = true,
+    orientation     = column,
+    compresstype    = zstd,
+    compresslevel   = 3
+)
+DISTRIBUTED BY (ride_id);
+
+-- 2. Данные месяца из обоих источников
+INSERT INTO stg.citibike_trips_2025_09
+SELECT * FROM stg.ext_raw_valid_2025_09
+UNION ALL
+SELECT * FROM stg.ext_raw_valid_late_2025_09;
+
+-- 3. Атомарная подмена партиции
+ALTER TABLE stg.citibike_trips
+EXCHANGE PARTITION FOR ('2025-09-01'::timestamp)
+WITH TABLE stg.citibike_trips_2025_09
+WITH VALIDATION;
+
+-- 4. Уборка
+DROP TABLE stg.citibike_trips_2025_09;
+DROP EXTERNAL TABLE stg.ext_raw_valid_2025_09;
+DROP EXTERNAL TABLE stg.ext_raw_valid_late_2025_09;</pre></div>
+  <h3 class="sec">Вопросы с собеседований</h3>
+  <p>Короткие ответы на частые вопросы. Раскрывай по одному и сначала попробуй ответить сам.</p>
+  <div class="faq">
+    <details><summary>Что делать, если данные не помещаются в Greenplum?</summary><ol class="steps">
+      <li><b>Сжать таблицы:</b> перейти на AO с zstd или zlib, для колоночных — rle_type, подобрать compresslevel.</li>
+      <li><b>Партиции + охлаждение:</b> старые партиции выгрузить в S3 или HDFS (writable external table) или удалить целиком.</li>
+      <li><b>Холодные данные — наружу:</b> оставить их в S3 и читать через PXF как внешние таблицы.</li>
+      <li><b>Добавить хосты:</b> горизонтальное масштабирование и перераспределение данных.</li>
+      <li><b>VACUUM FULL</b> после массовых UPDATE и DELETE, чтобы реально освободить место.</li>
+      <li><b>Ротация логов</b> Greenplum: со временем они занимают много места.</li>
+      <li><b>Исправить перекос:</b> если ключ распределения неудачный, один сегмент переполнен, а остальные пусты.</li>
+    </ol></details>
+    <details><summary>Как не сканировать всю большую таблицу ради последних месяцев?</summary><p>Партиционировать по дате и хранить таблицу как AO column. Фильтр <code>WHERE started_at &gt;= …</code> отсечёт ненужные партиции, а колоночное хранение прочитает только нужные колонки. Проверить через <code>EXPLAIN</code>, что сработал partition elimination.</p></details>
+    <details><summary>Нужны ли индексы или хватит партиционирования?</summary><p>По умолчанию индексы не нужны. Основная оптимизация — распределение, партиционирование и колоночное хранение. Индекс оправдан, если из огромной таблицы часто достают единичные строки.</p></details>
+    <details><summary>DISTINCT или GROUP BY для дедупликации?</summary><p>Оба работают и дают одинаковый план с HashAggregate. Дедупликация идёт в два этапа: на каждом сегменте, потом итоговая.</p></details>
+    <details><summary>Как убрать Broadcast, Redistribute и Gather Motion?</summary><p>Broadcast — справочник сделать REPLICATED, включить ORCA. Redistribute — распределить таблицы по ключу JOIN. Gather — убрать нельзя, но можно агрегировать на сегментах и ставить LIMIT вместе с ORDER BY.</p></details>
+    <details><summary>Какой порт у Greenplum по умолчанию?</summary><p>5432, как у PostgreSQL. Подключение идёт к мастеру.</p></details>
+  </div>
+  <div class="row"><button class="ghost" id="resetAll">Сбросить прогресс</button><span class="src" id="resetMsg"></span></div>
+</section>
+
+<div class="pager" id="pager"><button class="ghost" id="pgPrev">← Назад</button><button class="btn" id="pgNext">Дальше →</button></div>
+</main>
+</div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="assets/app.js"></script>
+</body>
+</html>
