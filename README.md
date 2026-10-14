@@ -37,12 +37,8 @@ python -m http.server 8000
 ## Как опубликовать на GitHub Pages
 
 1. Создать на GitHub пустой репозиторий `greenplum-trainer` (публичный: на бесплатном тарифе Pages работает только для публичных).
-2. В этой папке выполнить:
+2. Репозиторий уже инициализирован (ветка `main`, первый коммит сделан). Осталось привязать GitHub и отправить код:
    ```bash
-   git init
-   git add .
-   git commit -m "Тренажёр Greenplum"
-   git branch -M main
    git remote add origin https://github.com/<твой-логин>/greenplum-trainer.git
    git push -u origin main
    ```
